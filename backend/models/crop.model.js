@@ -18,7 +18,7 @@ const cropSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    customers: [
+    dealers: [
       {
         type: mongoose.Types.ObjectId,
         ref: "Users",
