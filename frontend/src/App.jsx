@@ -1,21 +1,15 @@
-import React, { use, useEffect } from "react";
-import axios from "axios";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SignIn from "./pages/signin/SignIn";
 
-const App = () => {
-  const fetchResponse = async () => {
-    const response = await axios.get("http://localhost:5000");
-    console.log(response.data);
-  };
-
-  useEffect(() => {
-    fetchResponse();
-  }, []);
+function App() {
   return (
-    <>
-      <div className="">This is pavan</div>
-      <p>hello</p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SignIn />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
