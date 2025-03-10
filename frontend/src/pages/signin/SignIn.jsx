@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../../assets/logo.png";
 import ArrowDownScroll from "../../components/controls/ArrowDownScroll";
 import Divider from "@/components/Divider";
 import SocialAuth from "@/components/SocialAuth";
-import SignInForm from "./SignInForm";
+import MagicLinkForm from "./MagicLinkForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RegisterForm from "./RegisterForm";
+import LoginForm from "./LoginForm";
 
 const SignIn = () => {
+  const [method, setMethod] = useState("register");
+
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 py-8 lg:w-[40vw] lg:px-12">
@@ -57,9 +62,48 @@ const SignIn = () => {
           </p>
         </div>
         <div className="w-full max-w-md space-y-5">
-          <div>
-            <SignInForm />
-          </div>
+          <Tabs defaultValue="Credentials">
+            <TabsList className="mb-5">
+              <TabsTrigger value="Credentials">
+                <span className="hidden md:block">Signin with Credentials</span>
+                <span className="block md:hidden">Credentials</span>
+              </TabsTrigger>
+              <TabsTrigger value="Magic-Link">
+                <span className="hidden md:block">Signin with Magic-Link</span>
+                <span className="block md:hidden">Magic-Link</span>
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="Credentials">
+              {method === "register" ? (
+                <>
+                  <RegisterForm />
+                  <p
+                    onClick={() => setMethod("login")}
+                    className="text-muted-foreground mt-3 flex w-full cursor-pointer justify-end gap-1 text-sm"
+                  >
+                    Do you already have an account?{" "}
+                    <p className="text-primary hover:underline">Login here</p>
+                  </p>
+                </>
+              ) : (
+                <>
+                  <LoginForm />
+                  <p
+                    onClick={() => setMethod("register")}
+                    className="text-muted-foreground mt-3 flex w-full cursor-pointer justify-end gap-1 text-sm"
+                  >
+                    Don&apos;t have an account?{" "}
+                    <p className="text-primary hover:underline">
+                      Register here
+                    </p>
+                  </p>
+                </>
+              )}
+            </TabsContent>
+            <TabsContent value="Magic-Link">
+              <MagicLinkForm />
+            </TabsContent>
+          </Tabs>
           <Divider />
           <div className="space-y-5">
             <SocialAuth />
