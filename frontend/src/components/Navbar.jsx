@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import UserAvatar from "@/components/controls/UserAvatar";
 import { NavLink } from "react-router-dom";
+import LiveWeather from "./LiveWeather";
 
 const Navbar = () => {
   const [isTop, setOffSet] = useState(false);
@@ -29,16 +30,14 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      <div className="border-b py-1 pb-9 ">
-        <div className="mx-auto max-w-7xl ">
+      <div className="border-b py-1 pb-9">
+        <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between">
             <div>
               <img src={logo} alt="" className="h-20 w-24" />
             </div>
             <div>
-              <h1 className="text-primary font-serif bg-clip-text text-center text-2xl font-semibold">
-                Growing Together, Building Futures 🌱
-              </h1>
+              <LiveWeather />
             </div>
 
             <div className="flex items-center justify-end gap-8">
@@ -57,7 +56,7 @@ const Navbar = () => {
       <div
         className={
           !isTop
-            ? "text-primary-foreground bg-primary  -m-7 z-20 mx-auto flex max-w-7xl rounded-xl shadow-xl shadow-[#00000059] transition-all duration-300 ease-in-out"
+            ? "text-primary-foreground bg-primary z-20 -m-7 mx-auto flex max-w-7xl rounded-xl shadow-xl shadow-[#00000059] transition-all duration-300 ease-in-out"
             : "bg-primary text-primary-foreground fixed top-0 z-30 flex w-[100%] shadow-xl shadow-[#00000059] transition-all duration-300 ease-in-out"
         }
       >
