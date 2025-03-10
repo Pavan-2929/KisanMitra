@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --color-lightgreen: #03b61dcd;
+}
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));

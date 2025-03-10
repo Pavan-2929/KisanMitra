@@ -62,7 +62,7 @@ const SignIn = () => {
           </p>
         </div>
         <div className="w-full max-w-md space-y-5">
-          <Tabs defaultValue="EmailPassAuth">
+          <Tabs defaultValue="Credentials">
             <TabsList className="mb-5">
               <TabsTrigger value="Credentials">
                 <span className="hidden md:block">Signin with Credentials</span>
