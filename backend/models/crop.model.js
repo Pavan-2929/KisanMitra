@@ -38,4 +38,4 @@ const cropSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Crop = new mongoose.model("Crops", cropSchema);
+export default mongoose.model("Crops", cropSchema);
