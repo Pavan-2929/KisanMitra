@@ -10,6 +10,7 @@ import resourcesImage from "@/assets/resources.png";
 import hirecontractorImage from "@/assets/hirecontractor.png";
 import weatherImage from "@/assets/weather.png";
 import chatbotImage from "@/assets/chatbot.png";
+import FAQs from "./FAQs";
 
 const Home = () => {
   return (
@@ -61,7 +62,7 @@ const Home = () => {
             <div className="grid grid-cols-3 gap-16">
               <div>
                 <img src={ecommerceImage} alt="" className="mx-auto size-14" />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Crops E-Commerce
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -73,7 +74,7 @@ const Home = () => {
               </div>
               <div>
                 <img src={blogImage} alt="" className="mx-auto size-14" />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Share your doubts
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -84,7 +85,7 @@ const Home = () => {
               </div>
               <div>
                 <img src={resourcesImage} alt="" className="mx-auto size-14" />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Resources
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -99,7 +100,7 @@ const Home = () => {
                   alt=""
                   className="mx-auto size-14"
                 />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Hire contracgtors
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -110,7 +111,7 @@ const Home = () => {
               </div>
               <div>
                 <img src={weatherImage} alt="" className="mx-auto size-14" />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Weather{" "}
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -121,7 +122,7 @@ const Home = () => {
               </div>
               <div>
                 <img src={chatbotImage} alt="" className="mx-auto size-14" />
-                <h2 className="text-primary pt-6 pb-2 text-center text-xl font-semibold">
+                <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
                   Chatbot{" "}
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
@@ -133,6 +134,7 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <FAQs />
       </div>
     </>
   );
