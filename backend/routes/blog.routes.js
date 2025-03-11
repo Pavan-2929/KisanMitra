@@ -4,23 +4,22 @@ import {
   commentToBlog,
   getAllBlogs,
   getBlog,
-  likeBlog,
+  toggleBlogLike,
   removeBlog,
   removeComment,
-  unlikeBlog,
   updateBlog,
 } from "../controllers/blog.controller.js";
+import upload from "../config/multerConfig.js";
 
 const router = express.Router();
 
-router.route("/add-new-blog").post(addNewBlog);
-router.route("/get-blog/:id").get(getBlog);
+router.route("/add-new-blog").post(upload.array("files", 5), addNewBlog);
+router.route("/get-blog/:blogId").get(getBlog);
 router.route("/get-all-blogs").get(getAllBlogs);
-router.route("/remove-blog/:id").delete(removeBlog);
-router.route("/update-blog/:id").put(updateBlog);
-router.route("/:id/like").put(likeBlog);
-router.route("/:id/unlike").put(unlikeBlog);
-router.route("/:id/add-comment").put(commentToBlog);
-router.route("/:id/remove-comment").put(removeComment);
+router.route("/remove-blog/:blogId").delete(removeBlog);
+router.route("/update-blog/:blogId").put(updateBlog);
+router.route("/:blogId/togglelike").put(toggleBlogLike);
+router.route("/:blogId/add-comment").put(commentToBlog);
+router.route("/:blogId/remove-comment").delete(removeComment);
 
 export default router;

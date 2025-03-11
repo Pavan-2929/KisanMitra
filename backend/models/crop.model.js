@@ -20,8 +20,8 @@ const cropSchema = new mongoose.Schema(
     },
     dealers: [
       {
-        type: mongoose.Types.ObjectId,
-        ref: "Users",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
     cropfile: [
@@ -31,11 +31,12 @@ const cropSchema = new mongoose.Schema(
       },
     ],
     farmer: {
-      type: mongoose.Types.ObjectId,
-      ref: "Users",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Crops", cropSchema);
+const Crop = mongoose.model("Crop", cropSchema);
+export default Crop;
