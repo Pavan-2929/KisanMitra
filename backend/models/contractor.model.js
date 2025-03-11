@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const contractorSchema = new mongoose.Schema(
   {
     profile: {
-      type: mongoose.Types.ObjectId,
-      ref: "Users",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     numberOfLabors: {
       type: Number,
