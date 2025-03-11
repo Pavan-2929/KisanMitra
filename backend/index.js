@@ -6,14 +6,17 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.routes.js";
 import cropRouter from "./routes/crop.routes.js";
 import blogRouter from "./routes/blog.routes.js";
+import session from "express-session";
+import passport from "passport";
+import "./passportConfig.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app = express();
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
@@ -22,21 +25,25 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.use(session({ secret: "secret", resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
+const connectionurl = "mongodb://localhost:27017/kishanmitra";
 mongoose
-  .connect(process.env.MONGO_DB_URL)
+  .connect(connectionurl)
   .then(() => console.log("Connected to database"))
   .catch((error) => console.error(error));
 
-app.use("/api/users", userRouter);
+app.use("/api/auth", userRouter);
 app.use("/api/crops", cropRouter);
 app.use("/api/blogs", blogRouter);
 
 app.use((err, req, res, next) => {
+  console.log(err);
   const statusCode = err.statusCode || 500;
   const message = err.message || "Something went wrong";
 
@@ -46,3 +53,5 @@ app.use((err, req, res, next) => {
     message,
   });
 });
+
+//hiiiiii

@@ -1,4 +1,7 @@
-export const addNewCrop = (req, res) => {};
+import mongoose from "mongoose";
+import Crops from "../models/crop.model.js";
+
+export const addNewCrop = async (req, res) => {};
 
 export const getCrop = (req, res) => {};
 

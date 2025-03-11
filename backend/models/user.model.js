@@ -1,10 +1,32 @@
 import mongoose from "mongoose";
 
+const AddressSchema = new mongoose.Schema({
+  formattedAddress: { type: String, },
+  city: { type: String, },
+  state: { type: String, },
+  country: { type: String, default: "india" },
+  pincode: { type: String },
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point"
+    },
+    coordinates: {
+      type: [Number],
+    }
+  },
+  placeId: { type: String }
+});
+
+
+AddressSchema.index({ location: "2dsphere" });
+
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    fullName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     email: {
@@ -12,7 +34,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      required: true,
+      // required: true,
       validate: {
         validator: (email) => {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -22,25 +44,34 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
     profile: {
-      type: String,
-      default:
-        "https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png",
+      url: {
+        type: String,
+        default:
+          "https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png",
+      },
+      filepath: { type: String, default: "" }
+    },
+    googleId: {
+      type: String
+    },
+    userIp: {
+      type: String
+    },
+    isVerified: {
+      type: Boolean, default: false
     },
     categories: {
       type: String,
       enum: ["Farmer", "Dealer", "Contractors"],
       default: "Farmer",
     },
-    address: {
-      type: String,
-      required: true,
-    },
+    address: AddressSchema,
     phone: {
       type: Number,
-      required: true,
+      // required: true,
       trim: true,
       validate: {
         validator: (phone) => {
@@ -59,4 +90,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const User = mongoose.model("User", userSchema);
+ const User = mongoose.model("User", userSchema);
+export default User 

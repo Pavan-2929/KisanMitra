@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
-import { Blog } from "../models/blog.model.js";
-import { User } from "../models/user.model.js";
+import Blog from "../models/blog.model.js";
+import User from "../models/user.model.js";
 
 //Adding New Blog
 export const addNewBlog = async (req, res) => {
   try {
-    const { title, description, image, userId } = req.body;
-    if (!title || !description || !image || !userId) {
+    const { title, description, userId } = req.body;
+
+    if (!title || !description || !userId || !req.files) {
       return res
         .status(400)
         .json({ message: "Please provide all required field!" });
@@ -61,10 +62,12 @@ export const getBlog = async (req, res) => {
 //All Blogs details retrieved.
 export const getAllBlogs = async (req, res) => {
   try {
-    const allBlogs = await Blog.find({}).populate({
-      path: "author",
-      select: "-password",
-    });
+    const allBlogs = await Blog.find({})
+      .populate({
+        path: "author",
+        select: "-password",
+      })
+      .sort({ createdAt: -1 });
 
     return res
       .status(200)
@@ -173,7 +176,7 @@ export const commentToBlog = async (req, res) => {
     const { blogId } = req.params;
     const { userId, text } = req.body;
 
-    if (mongoose.Types.ObjectId.isValid(blogId)) {
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return res.status(400).json({ message: "Invalid blog Id!" });
     }
     const blog = await Blog.findById(blogId);

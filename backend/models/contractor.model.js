@@ -20,4 +20,5 @@ const contractorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Contractor = mongoose.model("Contractor", contractorSchema);
+const Contractor = mongoose.model("Contractor", contractorSchema);
+export default Contractor;
