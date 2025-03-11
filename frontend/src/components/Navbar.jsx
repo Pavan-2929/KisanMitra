@@ -30,7 +30,7 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      <div className="border-b py-1 pb-9">
+      <div className="border-b bg-accent py-1 pb-9">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between">
             <div>

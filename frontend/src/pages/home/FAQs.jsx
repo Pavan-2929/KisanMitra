@@ -20,7 +20,7 @@ const FAQs = () => {
       </div>
 
       <div className="col-span-2 space-y-5">
-        <h2 className="mb-14 text-center text-4xl font-bold">
+        <h2 className="mb-14 text-4xl font-bold">
           Frequently Asked Questions
         </h2>
         <Accordion type="single" collapsible className="space-y-4">
