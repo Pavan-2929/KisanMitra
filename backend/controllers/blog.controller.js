@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 import Blog from "../models/blog.model.js";
 import User from "../models/user.model.js";
+import deleteCloudinaryFile from "../utils/deleteCloudinaryFile.js";
 
 //Adding New Blog
 export const addNewBlog = async (req, res) => {
   try {
     const { title, description, userId } = req.body;
 
-    if (!title || !description || !userId || !req.files) {
+    if (!title || !description || !userId) {
       return res
         .status(400)
         .json({ message: "Please provide all required field!" });
@@ -18,12 +19,12 @@ export const addNewBlog = async (req, res) => {
       return res.status(404).json({ message: "User not found!" });
     }
 
-    const mediaFiles = req.files.map((file) => file.path);
+    const imageUrl = req.files.map((file) => file.path);
 
     const newBlog = new Blog({
       title,
       description,
-      image: mediaFiles,
+      image: imageUrl,
       author: userId,
     });
 
@@ -81,6 +82,7 @@ export const getAllBlogs = async (req, res) => {
 export const removeBlog = async (req, res) => {
   try {
     const { blogId } = req.params;
+
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return res.status(400).json({ message: "Invalid Blog Id!" });
     }
@@ -93,6 +95,12 @@ export const removeBlog = async (req, res) => {
     await User.findByIdAndUpdate(blog.author, {
       $pull: { blogs: blog._id },
     });
+
+    if (blog?.image && blog.image.length > 0) {
+      await Promise.all(
+        blog.image.map((imgUrl) => deleteCloudinaryFile(imgUrl))
+      );
+    }
 
     await Blog.findByIdAndDelete(blogId);
 
