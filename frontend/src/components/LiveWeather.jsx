@@ -12,7 +12,6 @@ const LiveWeather = () => {
     try {
       const data = await getCurrentWeather({ lat, lon });
       setWeatherData(data);
-      console.log("Weather data:", data);
     } catch (error) {
       console.error("Error fetching weather:", error);
     } finally {
