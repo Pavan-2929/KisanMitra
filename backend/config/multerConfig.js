@@ -5,18 +5,18 @@ import cloudinary from "./cloudinaryConfig.js";
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    if (!file) {
-      return;
-    }
-
     let folder = "blog_media";
+    let resourceType = "image";
+
     if (file.mimetype.startsWith("video/")) {
       folder = "blog_video";
+      resourceType = "video";
     }
 
     return {
       folder: folder,
-      allowed_formats: ["jpg", "png", "jpeg", "mp4"],
+      allowed_formats: ["jpg", "png", "jpeg", "mp4", "avi", "mov"],
+      resource_type: resourceType,
     };
   },
 });
