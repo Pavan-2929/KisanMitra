@@ -2,7 +2,6 @@ import { getCurrentWeather } from "@/api/weather";
 import React, { useEffect, useState } from "react";
 import sun from "@/assets/weather/sun.png";
 
-const API_KEY = "YOUR_OPENWEATHERMAP_API_KEY"; // Replace with your API key
 const cities = [
   { name: "Surat", lat: 21.1702, lon: 72.8311 },
   { name: "Vadodara", lat: 22.3072, lon: 73.1812 },

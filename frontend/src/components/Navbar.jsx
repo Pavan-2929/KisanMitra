@@ -30,12 +30,12 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      <div className="border-b bg-accent py-1 pb-9">
+      <div className="bg-accent border-b py-1 pb-9">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between">
-            <div>
+            <NavLink to="/">
               <img src={logo} alt="" className="h-20 w-24" />
-            </div>
+            </NavLink>
             <div>
               <LiveWeather />
             </div>
@@ -63,11 +63,11 @@ const Navbar = () => {
         <div
           className={`flex w-[55%] items-center justify-between gap-5 px-7 text-[15px] font-semibold transition-all duration-300 ease-in-out ${!isTop ? "py-4" : "py-5 pl-20"}`}
         >
-          <NavLink to="/">E-Commerce</NavLink>
-          <NavLink to="/">Blogs</NavLink>
-          <NavLink to="/">Resources</NavLink>
-          <NavLink to="/">Hire Contractors</NavLink>
-          <NavLink to="/">Weather</NavLink>
+          <NavLink to="/e-commerce">E-Commerce</NavLink>
+          <NavLink to="/blogs">Blogs</NavLink>
+          <NavLink to="/resources">Resources</NavLink>
+          <NavLink to="/hire-contractors">Hire Contractors</NavLink>
+          <NavLink to="/weather">Weather</NavLink>
         </div>
         <div
           className={`${
