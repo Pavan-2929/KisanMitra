@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const contractorSchema = new mongoose.Schema(
   {
     profile: {
-      type: mongoose.Types.ObjectId,
-      ref: "Users",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     numberOfLabors: {
       type: Number,
@@ -20,4 +20,5 @@ const contractorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Contractor = mongoose.model("Contractor", contractorSchema);
+const Contractor = mongoose.model("Contractor", contractorSchema);
+export default Contractor;

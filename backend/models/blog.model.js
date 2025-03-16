@@ -16,16 +16,17 @@ const blogSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    likes: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     comments: [
       {
         user: {
-          type: mongoose.Types.ObjectId,
-          ref: "Users",
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
         },
         text: {
           type: String,
@@ -38,12 +39,13 @@ const blogSchema = new mongoose.Schema(
       },
     ],
     author: {
-      type: mongoose.Types.ObjectId,
-      ref: "Users",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-export const Blog = new mongoose.model("Blogs", blogSchema);
+const Blog = mongoose.model("Blog", blogSchema);
+export default Blog;

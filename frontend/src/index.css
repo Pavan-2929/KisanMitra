@@ -4,6 +4,12 @@
   --color-lightgreen: #03b61dcd;
 }
 
+.active {
+  font-weight: 700;
+  scale: 1.005;
+  text-shadow: 2px;
+}
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));

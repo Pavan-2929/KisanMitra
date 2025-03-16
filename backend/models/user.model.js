@@ -80,8 +80,15 @@ const userSchema = new mongoose.Schema(
       },
       message: "Phone number must be exactly 10 digits!",
     },
+    blogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
+    ],
   },
   { timestamps: true }
 );
-const User = mongoose.model('Users', userSchema);
+
+ const User = mongoose.model("User", userSchema);
 export default User 
