@@ -24,6 +24,7 @@ AddressSchema.index({ location: "2dsphere" });
 
 const userSchema = new mongoose.Schema(
   {
+
     fullName: {
       type: String,
       // required: true,
@@ -69,6 +70,7 @@ const userSchema = new mongoose.Schema(
       default: "Farmer",
     },
     address: AddressSchema,
+    crops: [{ type: mongoose.Types.ObjectId, ref: "Crops" }],
     phone: {
       type: Number,
       // required: true,
