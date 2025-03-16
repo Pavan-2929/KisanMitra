@@ -4,15 +4,18 @@ import {
   getCrop,
   getCrops,
   removeCrop,
-  updateCrop,
+  updateCrop
 } from "../controllers/crop.controller.js";
+import { uploadCropImages } from "../middlewares/cloudinary.js";
 
 const router = express.Router();
 
-router.route("/add-new-crop").post(addNewCrop);
+router.post("/add-new-crop",
+  //  isLoggedIn, isFarmer, uploadCropImages, 
+  addNewCrop);
 router.route("/get-crop/:id").get(getCrop);
 router.route("/update-crop/:id").put(updateCrop);
-router.route("/get-all-crops").get(getCrops);
+router.route("/get-all-crops/:id").get(getCrops);
 router.route("/remove-crop/:id").delete(removeCrop);
 
 export default router;
