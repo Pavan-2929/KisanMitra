@@ -4,6 +4,7 @@ import User from "./models/user.model.js";
 import { Strategy as MagicLinkStrategy } from "passport-magic-link";
 import mailSender from "./utils/mailSender.js";
 import bcrypt from "bcrypt";
+import { Strategy as LocalStrategy } from "passport-local";
 
 passport.use(new GoogleStrategy({
 	clientID: process.env.GOOGLE_CLIENT_ID,
@@ -65,7 +66,7 @@ passport.use("magiclink", new MagicLinkStrategy({
 		console.log(" body details : ", req.body);
 		const { categories, password, fullName } = req.body;
 		try {
-			const link = `${process.env.BASE_URL || "http://localhost:5000"}/api/auth/magiclink/callback?token=${token}`;
+			const link = `${process.env.BASE_URL}/api/auth/magiclink/callback?token=${token}`;
 			console.log(link)
 			const emailBody = `Click the link to login: <a href="${link}">${link}</a>`;
 			await mailSender(user.email, "Your Magic Login Link", emailBody);
@@ -109,8 +110,39 @@ passport.use("magiclink", new MagicLinkStrategy({
 	},
 ));
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-	const user = await User.findById(id);
-	done(null, user);
+passport.use('local', new LocalStrategy({ usernameField: "email" },
+	async (email, password, done) => {
+		try {
+			const user = await User.findOne({ email });
+			if (!user) {
+				return done(null, false, { message: "User not found" });
+			}
+
+			const isMatch = await bcrypt.compare(password, user.password);
+			if (!isMatch) {
+				return done(null, false, { message: "Incorrect password" });
+			}
+
+			// console.log(" finded user " + user)
+
+			return done(null, user);
+		} catch (err) {
+			return done(err);
+		}
+	}
+));
+
+passport.serializeUser((user, done) => {
+	console.log("user serialized")
+	done(null, user.id);
 });
+passport.deserializeUser(async (id, done) => {
+	console.log("deserialized")
+	try {
+		const user = await User.findById(id);
+		done(null, user);
+	} catch (error) {
+		console.log("error deserializing user", error)
+		done(error, false)
+	}
+})
