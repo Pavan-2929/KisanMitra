@@ -133,11 +133,11 @@ passport.use('local', new LocalStrategy({ usernameField: "email" },
 ));
 
 passport.serializeUser((user, done) => {
-	console.log("user serialized")
+	// console.log("user serialized")
 	done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
-	console.log("deserialized")
+	// console.log("deserialized")
 	try {
 		const user = await User.findById(id);
 		done(null, user);

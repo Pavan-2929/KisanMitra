@@ -1,7 +1,6 @@
 export const isLoggedIn = (req, res, next) => {
 	// console.log("🔹 Session ID:", req.sessionID);
 	// console.log(req.authenticated)
-	console.log(req.cookies)
 
 	// console.log("🔹 Session Data:", req.session);
 	// console.log("🔹 Authenticated:", req.isAuthenticated());

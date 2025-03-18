@@ -2,6 +2,7 @@ import { LoginSchema } from "@/lib/validations";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import {
   Form,
   FormControl,
@@ -28,14 +29,40 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values) => {
-    const { email } = values;
-
-    console.log(email);
+    console.log("Asdasdasd")
+    try {
+      const { email, password } = values;
+      console.log(email);
+      const res = await axios.post('http://localhost:5000/api/auth/login', {
+        email, password
+      }, {
+        headers: {
+          'Content-Type': "application/json"
+        },
+        withCredentials: true
+      })
+      console.log(res.data.token);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        console.log("Form submit clicked!");
+
+        form.handleSubmit(
+          (values) => {
+            console.log("Form values received:", values);
+            onSubmit(values);
+          },
+          (errors) => {
+            console.log("Validation failed:", errors);  // Log errors
+          }
+        )(e);
+      }} className="space-y-3">
         {error && (
           <p className="text-medium text-destructive text-center">{error}</p>
         )}
