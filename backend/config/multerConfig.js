@@ -5,11 +5,11 @@ import cloudinary from "./cloudinaryConfig.js";
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    let folder = "blog_media";
+    let folder = "Kishan_media";
     let resourceType = "image";
 
     if (file.mimetype.startsWith("video/")) {
-      folder = "blog_video";
+      folder = "Kishan_video";
       resourceType = "video";
     }
 

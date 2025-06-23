@@ -12,7 +12,10 @@ export const register = (req, res) => {};
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email);
+    console.log(password);
     if (!email || !password) {
+      console.log("dd");
       return res.status(404).json({
         success: false,
         error: "Provide full credentials",

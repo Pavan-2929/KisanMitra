@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const cropSchema = new mongoose.Schema(
   {
-    name: {
+    cropName: {
       type: String,
       required: true,
     },
@@ -11,6 +11,10 @@ const cropSchema = new mongoose.Schema(
       required: true,
     },
     quantity: {
+      type: Number,
+      required: true,
+    },
+    cropAge: {
       type: Number,
       required: true,
     },
@@ -24,7 +28,7 @@ const cropSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    cropfile: [
+    file: [
       {
         type: String,
         required: true,
