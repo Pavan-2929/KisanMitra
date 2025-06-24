@@ -1,46 +1,117 @@
 import mongoose from "mongoose";
 import Crops from "../models/crop.model.js";
 
+// Add New Crop
 export const addNewCrop = async (req, res) => {
-  const { cropName, description, quantity, cropAge, price } = req.body;
-  const files = req.files;
-  let fileUrls = [];
+  // Destructure all required fields from req.body
+  const {
+    name,
+    description,
+    cropVariety,
+    cropAge,
+    harvestDate,
+    fertilizerUsed,
+    pesticidesUsed,
+    soilType,
+    moistureContent,
+    processingDetails,
+    qualityGrade,
+    certifications,
+    quantityAvailable,
+    totalQuantity,
+    unitOfcrop,
+    pricePerUnit,
+    bulkDiscount,
+    negotiable,
+    storageType,
+    deliveryOptions,
+  } = req.body;
+
+  // Handle files (images/videos)
+  const files = req.files || [];
+  const cropImagesUrl = [];
+  const cropVideosUrl = [];
   files.forEach((file) => {
-    fileUrls.push(file.path);
+    if (file.mimetype.startsWith("image/")) {
+      cropImagesUrl.push({ url: file.path });
+    } else if (file.mimetype.startsWith("video/")) {
+      cropVideosUrl.push({ url: file.path });
+    }
   });
-  if (!cropName || !description || !files || !quantity || !cropAge || !price) {
-    return res.status(400).json({ message: "All fields are required!" });
+
+  // Required field validation
+  if (!name || !description || !totalQuantity || !unitOfcrop || !pricePerUnit) {
+    return res
+      .status(400)
+      .json({ message: "All required fields must be filled!" });
   }
 
   try {
-    // Validate quantity and cropAge
-    if (isNaN(quantity) || quantity <= 0) {
+    // Additional validation
+    if (isNaN(totalQuantity) || totalQuantity <= 0) {
       return res
         .status(400)
-        .json({ message: "Quantity must be a positive number!" });
+        .json({ message: "Total Quantity must be a positive number!" });
+    }
+    if (isNaN(pricePerUnit) || pricePerUnit < 0) {
+      return res
+        .status(400)
+        .json({ message: "Price per unit must be a non-negative number!" });
+    }
+    if (
+      moistureContent &&
+      (isNaN(moistureContent) || moistureContent < 0 || moistureContent > 100)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Moisture content must be between 0 and 100!" });
     }
 
-    if (isNaN(cropAge) || cropAge < 0) {
-      return res
-        .status(400)
-        .json({ message: "Crop age must be a non-negative number!" });
-    }
-
-    if (isNaN(price) || price < 0) {
-      return res
-        .status(400)
-        .json({ message: "Price must be a non-negative number!" });
+    // Prepare certifications array
+    let certificationsArr = [];
+    if (certifications) {
+      if (Array.isArray(certifications)) {
+        certificationsArr = certifications;
+      } else {
+        certificationsArr = certifications.split(",").map((c) => c.trim());
+      }
     }
 
     const newCrop = new Crops({
-      cropName,
+      name,
       description,
-      file: fileUrls, //It can be image or video URL
-      quantity,
-      price,
-      cropAge,
+      cropVariety,
+      cropAge: cropAge
+        ? typeof cropAge === "object"
+          ? cropAge
+          : {
+              value: req.body["cropAge[value]"],
+              unit: req.body["cropAge[unit]"],
+            }
+        : undefined,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications: certificationsArr,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+      cropImagesUrl,
+      cropVideosUrl,
+      // Add farmer if you have authentication
+      // farmer: req.user?._id,
     });
 
+    console.log(newCrop);
     const savedCrop = await newCrop.save();
     res
       .status(201)
@@ -51,6 +122,7 @@ export const addNewCrop = async (req, res) => {
   }
 };
 
+// Get Single Crop
 export const getCrop = async (req, res) => {
   try {
     const cropId = req.params.id;
@@ -61,33 +133,32 @@ export const getCrop = async (req, res) => {
     if (!crop) {
       return res.status(404).json({ message: "Crop not found!" });
     }
-
     return res.status(200).json(crop);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error!" });
   }
 };
 
+// Get All Crops
 export const getCrops = async (req, res) => {
   try {
     const crops = await Crops.find().populate("farmer");
     if (!crops || crops.length === 0) {
       return res.status(404).json({ message: "No crops found!" });
     }
-
     return res.status(200).json(crops);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error!" });
   }
 };
 
+// Remove Crop
 export const removeCrop = async (req, res) => {
   try {
     const cropId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(cropId)) {
       return res.status(400).json({ message: "Invalid crop ID!" });
     }
-
     const deletedCrop = await Crops.findByIdAndDelete(cropId);
     if (!deletedCrop) {
       return res.status(404).json({ message: "Crop not found!" });
@@ -98,48 +169,91 @@ export const removeCrop = async (req, res) => {
   }
 };
 
+// Update Crop
 export const updateCrop = async (req, res) => {
   try {
     const cropId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(cropId)) {
       return res.status(400).json({ message: "Invalid crop ID!" });
     }
-    const { cropName, description, quantity, cropAge, price } = req.body;
-    const files = req.files;
-    let fileUrls = [];
-    if (files && files.length > 0) {
-      files.forEach((file) => {
-        fileUrls.push(file.path);
-      });
-    }
-    if (!cropName || !description || !quantity || !cropAge || !price) {
-      return res.status(400).json({ message: "All fields are required!" });
-    }
-    // Validate quantity and cropAge
-    if (isNaN(quantity) || quantity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Quantity must be a positive number!" });
-    }
-    if (isNaN(cropAge) || cropAge < 0) {
-      return res
-        .status(400)
-        .json({ message: "Crop age must be a non-negative number!" });
-    }
-    if (isNaN(price) || price < 0) {
-      return res
-        .status(400)
-        .json({ message: "Price must be a non-negative number!" });
+
+    const {
+      name,
+      description,
+      cropVariety,
+      cropAge,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+    } = req.body;
+
+    // Handle files (images/videos)
+    const files = req.files || [];
+    const cropImagesUrl = [];
+    const cropVideosUrl = [];
+    files.forEach((file) => {
+      if (file.mimetype.startsWith("image/")) {
+        cropImagesUrl.push({ url: file.path });
+      } else if (file.mimetype.startsWith("video/")) {
+        cropVideosUrl.push({ url: file.path });
+      }
+    });
+
+    // Prepare certifications array
+    let certificationsArr = [];
+    if (certifications) {
+      if (Array.isArray(certifications)) {
+        certificationsArr = certifications;
+      } else {
+        certificationsArr = certifications.split(",").map((c) => c.trim());
+      }
     }
 
     const updatedCrop = {
-      cropName,
+      name,
       description,
-      file: fileUrls, //It can be image or video URL
-      quantity,
-      price,
-      cropAge,
+      cropVariety,
+      cropAge: cropAge
+        ? typeof cropAge === "object"
+          ? cropAge
+          : {
+              value: req.body["cropAge[value]"],
+              unit: req.body["cropAge[unit]"],
+            }
+        : undefined,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications: certificationsArr,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+      cropImagesUrl,
+      cropVideosUrl,
     };
+
     const crop = await Crops.findById(cropId);
     if (!crop) {
       return res.status(404).json({ message: "Crop not found!" });

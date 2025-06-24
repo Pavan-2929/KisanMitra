@@ -3,134 +3,332 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { UploadCloud, Loader2 } from "lucide-react"; // Import Loader2
+import { UploadCloud, Loader2 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+const initialState = {
+    name: "",
+    description: "",
+    cropVariety: "",
+    cropAgeValue: "",
+    cropAgeUnit: "days",
+    harvestDate: "",
+    fertilizerUsed: "No",
+    pesticidesUsed: "No",
+    soilType: "",
+    moistureContent: "",
+    processingDetails: "Raw",
+    qualityGrade: "A",
+    certifications: "",
+    quantityAvailable: "",
+    totalQuantity: "",
+    unitOfcrop: "kg",
+    pricePerUnit: "",
+    bulkDiscount: "",
+    negotiable: true,
+    storageType: "",
+    deliveryOptions: "Pickup",
+};
+
 const Crop = () => {
-    const [cropName, setCropName] = useState("");
-    const [description, setDescription] = useState("");
-    const [image, setImage] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
-    const [quantity, setQuantity] = useState("");
-    const [cropAge, setCropAge] = useState("");
-    const [price, setPrice] = useState(""); // Add this with other useState hooks
+    const [form, setForm] = useState(initialState);
     const [mediaFiles, setMediaFiles] = useState([]);
     const [mediaPreviews, setMediaPreviews] = useState([]);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Add loading state
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const dropRef = useRef();
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        setImage(file);
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => setImagePreview(reader.result);
-            reader.readAsDataURL(file);
-        } else {
-            setImagePreview(null);
-        }
+    // Handle input changes
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm((prev) => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+        }));
     };
 
-    const handleFiles = (files) => {
-        let images = [];
-        let videos = [];
-        let previews = [];
-
-        Array.from(files).forEach((file) => {
-            if (file.type.startsWith("image/")) {
-                if (images.length < 5) { // Allow up to 10 images
-                    images.push(file);
-                    previews.push({ type: "image", url: URL.createObjectURL(file) });
-                }
-            } else if (file.type.startsWith("video/") && (file.type === "video/mp4" || file.type === "video/webm")) {
-                if (videos.length < 2) {
-                    videos.push(file);
-                    previews.push({ type: "video", url: URL.createObjectURL(file) });
-                }
-            }
-        });
-
-        setMediaFiles([...images, ...videos]);
-        setMediaPreviews(previews);
-    };
-
+    // Handle media file selection
     const handleMediaChange = (e) => {
-        handleFiles(e.target.files);
+        const files = Array.from(e.target.files);
+        setMediaFiles(files);
+        setMediaPreviews(
+            files.map((file) => ({
+                type: file.type.startsWith("image/") ? "image" : "video",
+                url: URL.createObjectURL(file),
+            }))
+        );
     };
 
+    // Drag & drop handlers
     const handleDrop = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        handleFiles(e.dataTransfer.files);
+        const files = Array.from(e.dataTransfer.files);
+        setMediaFiles(files);
+        setMediaPreviews(
+            files.map((file) => ({
+                type: file.type.startsWith("image/") ? "image" : "video",
+                url: URL.createObjectURL(file),
+            }))
+        );
     };
+    const handleDragOver = (e) => e.preventDefault();
 
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-
+    // Handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Start loading
+        setIsSubmitting(true);
 
-        const formData = new FormData();
-        if (!cropName || !description || !quantity || !cropAge || !price) {
-            toast.error("Please fill in all fields.");
-            setIsSubmitting(false); // Stop loading
+        // Validation (add more as needed)
+        if (!form.name || !form.description || !form.totalQuantity || !form.unitOfcrop || !form.pricePerUnit) {
+            toast.error("Please fill in all required fields.");
+            setIsSubmitting(false);
             return;
         }
-        formData.append("cropName", cropName);
-        formData.append("description", description);
-        formData.append("quantity", quantity);
-        formData.append("cropAge", cropAge);
-        formData.append("price", price); // Add price to formData
-        mediaFiles.forEach(file => {
+
+        const formData = new FormData();
+        formData.append("name", form.name);
+        formData.append("description", form.description);
+        formData.append("cropVariety", form.cropVariety);
+        formData.append("cropAge[value]", form.cropAgeValue);
+        formData.append("cropAge[unit]", form.cropAgeUnit);
+        if (form.harvestDate) formData.append("harvestDate", form.harvestDate);
+        formData.append("fertilizerUsed", form.fertilizerUsed);
+        formData.append("pesticidesUsed", form.pesticidesUsed);
+        formData.append("soilType", form.soilType);
+        if (form.moistureContent) formData.append("moistureContent", form.moistureContent);
+        formData.append("processingDetails", form.processingDetails);
+        formData.append("qualityGrade", form.qualityGrade);
+        if (form.certifications) {
+            form.certifications.split(",").forEach((cert) => formData.append("certifications[]", cert.trim()));
+        }
+        if (form.quantityAvailable) formData.append("quantityAvailable", form.quantityAvailable);
+        formData.append("totalQuantity", form.totalQuantity);
+        formData.append("unitOfcrop", form.unitOfcrop);
+        formData.append("pricePerUnit", form.pricePerUnit);
+        if (form.bulkDiscount) formData.append("bulkDiscount", form.bulkDiscount);
+        formData.append("negotiable", form.negotiable);
+        if (form.storageType) formData.append("storageType", form.storageType);
+        formData.append("deliveryOptions", form.deliveryOptions);
+
+        mediaFiles.forEach((file) => {
             formData.append("files", file);
         });
 
         try {
-            await axios.post("http://localhost:5000/api/crops/add-new-crop", formData);
-
+            const res = await axios.post("http://localhost:5000/api/crops/add-new-crop", formData);
+            console.log(res);
             toast.success("Crop added successfully!");
+            setForm(initialState);
+            setMediaFiles([]);
+            setMediaPreviews([]);
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong!");
         } finally {
-            setIsSubmitting(false); // Always stop loading
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-green-100 to-white flex items-center justify-center p-4">
-            <Card className="w-full max-w-lg shadow-2xl">
+            <Card className="w-full max-w-2xl shadow-2xl">
                 <CardContent className="p-6">
                     <h1 className="text-2xl font-bold text-green-700 mb-6 text-center">
                         Upload Your Crop
                     </h1>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <Label className=" py-2" htmlFor="cropName">Crop Name</Label>
-                            <Input
-                                id="cropName"
-                                value={cropName}
-                                onChange={(e) => setCropName(e.target.value)}
-                                placeholder="e.g., Wheat, Rice"
-                                required
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <Label className={"py-2"} htmlFor="name" >
+                                    Crop Name <span className="text-red-500">*</span>
+                                </Label>
+                                <Input id="name" name="name" value={form.name} onChange={handleChange} required />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="cropVariety">Variety</Label>
+                                <Input id="cropVariety" name="cropVariety" value={form.cropVariety} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="description">
+                                    Description <span className="text-red-500">*</span>
+                                </Label>
+                                <Input id="description" name="description" value={form.description} onChange={handleChange} required />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="cropAgeValue">Crop Age</Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="cropAgeValue"
+                                        name="cropAgeValue"
+                                        type="number"
+                                        min="0"
+                                        value={form.cropAgeValue}
+                                        onChange={handleChange}
+                                        placeholder="Value"
+                                    />
+                                    <select
+                                        name="cropAgeUnit"
+                                        value={form.cropAgeUnit}
+                                        onChange={handleChange}
+                                        className="border rounded px-2 py-1"
+                                    >
+                                        <option value="days">Days</option>
+                                        <option value="weeks">Weeks</option>
+                                        <option value="months">Months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="harvestDate">Harvest Date</Label>
+                                <Input id="harvestDate" name="harvestDate" type="date" value={form.harvestDate} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="fertilizerUsed">Fertilizer Used</Label>
+                                <Input id="fertilizerUsed" name="fertilizerUsed" value={form.fertilizerUsed} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="pesticidesUsed">Pesticides Used</Label>
+                                <Input id="pesticidesUsed" name="pesticidesUsed" value={form.pesticidesUsed} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="soilType">Soil Type</Label>
+                                <Input id="soilType" name="soilType" value={form.soilType} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="moistureContent">Moisture Content (%)</Label>
+                                <Input
+                                    id="moistureContent"
+                                    name="moistureContent"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={form.moistureContent}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="processingDetails">Processing</Label>
+                                <select
+                                    id="processingDetails"
+                                    name="processingDetails"
+                                    value={form.processingDetails}
+                                    onChange={handleChange}
+                                    className="border rounded px-2 py-1 w-full"
+                                >
+                                    <option value="Raw">Raw</option>
+                                    <option value="Semi-processed">Semi-processed</option>
+                                    <option value="Packaged">Packaged</option>
+                                </select>
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="qualityGrade">Quality Grade</Label>
+                                <select
+                                    id="qualityGrade"
+                                    name="qualityGrade"
+                                    value={form.qualityGrade}
+                                    onChange={handleChange}
+                                    className="border rounded px-2 py-1 w-full"
+                                >
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="Organic Certified">Organic Certified</option>
+                                </select>
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="certifications">Certifications (comma separated)</Label>
+                                <Input id="certifications" name="certifications" value={form.certifications} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="quantityAvailable">Quantity Available</Label>
+                                <Input
+                                    id="quantityAvailable"
+                                    name="quantityAvailable"
+                                    type="number"
+                                    min="0"
+                                    value={form.quantityAvailable}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="totalQuantity">
+                                    Total Quantity <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="totalQuantity"
+                                    name="totalQuantity"
+                                    type="number"
+                                    min="0"
+                                    value={form.totalQuantity}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="unitOfcrop">
+                                    Unit <span className="text-red-500">*</span>
+                                </Label>
+                                <select
+                                    id="unitOfcrop"
+                                    name="unitOfcrop"
+                                    value={form.unitOfcrop}
+                                    onChange={handleChange}
+                                    className="border rounded px-2 py-1 w-full"
+                                    required
+                                >
+                                    <option value="kg">kg</option>
+                                    <option value="quintal">quintal</option>
+                                    <option value="ton">ton</option>
+                                </select>
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="pricePerUnit">
+                                    Price Per Unit (₹) <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="pricePerUnit"
+                                    name="pricePerUnit"
+                                    type="number"
+                                    min="0"
+                                    value={form.pricePerUnit}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="bulkDiscount">Bulk Discount</Label>
+                                <Input id="bulkDiscount" name="bulkDiscount" value={form.bulkDiscount} onChange={handleChange} />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Label className={"py-2"} htmlFor="negotiable">Negotiable</Label>
+                                <input
+                                    id="negotiable"
+                                    name="negotiable"
+                                    type="checkbox"
+                                    checked={form.negotiable}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="storageType">Storage Type</Label>
+                                <Input id="storageType" name="storageType" value={form.storageType} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <Label className={"py-2"} htmlFor="deliveryOptions">Delivery Options</Label>
+                                <select
+                                    id="deliveryOptions"
+                                    name="deliveryOptions"
+                                    value={form.deliveryOptions}
+                                    onChange={handleChange}
+                                    className="border rounded px-2 py-1 w-full"
+                                >
+                                    <option value="Pickup">Pickup</option>
+                                    <option value="Delivery">Delivery</option>
+                                    <option value="Both">Both</option>
+                                </select>
+                            </div>
                         </div>
                         <div>
-                            <Label className=" py-2" htmlFor="description">Description</Label>
-                            <Input
-                                id="description"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="Describe your crop"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <Label className=" py-2" htmlFor="media">Crop Images / Videos</Label>
+                            <Label className="py-2" htmlFor="media">Crop Images / Videos <span className="text-red-500">*</span></Label>
                             <div
                                 ref={dropRef}
                                 onDrop={handleDrop}
@@ -145,6 +343,7 @@ const Crop = () => {
                                     multiple
                                     style={{ display: "none" }}
                                     onChange={handleMediaChange}
+                                    required
                                 />
                                 <div>
                                     <UploadCloud className="inline-block mr-2 text-green-700" size={18} />
@@ -173,42 +372,6 @@ const Crop = () => {
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <Label className=" py-2" htmlFor="quantity">Quantity (kg)</Label>
-                            <Input
-                                id="quantity"
-                                type="number"
-                                min="1"
-                                value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
-                                placeholder="Enter quantity in kg"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <Label className=" py-2" htmlFor="cropAge">Crop Age (days)</Label>
-                            <Input
-                                id="cropAge"
-                                type="number"
-                                min="0"
-                                value={cropAge}
-                                onChange={(e) => setCropAge(e.target.value)}
-                                placeholder="How many days old?"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <Label className=" py-2" htmlFor="price">Price (₹)</Label>
-                            <Input
-                                id="price"
-                                type="number"
-                                min="0"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                placeholder="Enter price in INR"
-                                required
-                            />
-                        </div>
                         <Button
                             type="submit"
                             className="w-full bg-green-600 hover:bg-green-700 text-white"
@@ -226,6 +389,6 @@ const Crop = () => {
             </Card>
         </div>
     );
-}
+};
 
 export default Crop;
