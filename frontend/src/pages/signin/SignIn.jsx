@@ -9,7 +9,7 @@ import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
 
 const SignIn = () => {
-  const [method, setMethod] = useState("register");
+  const [method, setMethod] = useState("login");
 
   return (
     <div className="flex flex-col lg:flex-row">

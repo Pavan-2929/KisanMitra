@@ -38,7 +38,6 @@ export const getTodayWeather = async ({ lat, lon }) => {
 };
 
 export const getDailyForecast = async ({ lat, lon }) => {
-
   try {
     const response = await axios.get(`${API_CONFIG.BASE_URL}/forecast`, {
       params: {
@@ -53,5 +52,24 @@ export const getDailyForecast = async ({ lat, lon }) => {
   } catch (error) {
     console.error("Error fetching weather data:", error);
     throw new Error("Error fetching weather data");
+  }
+};
+
+export const getCityNames = async (query) => {
+  console.log(query);
+
+  try {
+    const response = await axios.get(`${API_CONFIG.CITY_URL}`, {
+      params: {
+        q: query,
+        limit: 5,
+        appid: API_CONFIG.API_KEY,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching city name:", error);
+    throw new Error("Error fetching city name");
   }
 };

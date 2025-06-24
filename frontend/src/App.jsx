@@ -9,9 +9,21 @@ import Blog from "./pages/blog";
 import ChatBot from "./components/ChatBot";
 import Crop from "./pages/Crop";
 import { Toaster } from 'react-hot-toast';
-
+import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/auth/me", { withCredentials: true, headers: { "Content-Type": "application/json" } });
+        console.log("User session active:", res.data);
+      } catch (error) {
+        console.log("No active session", error);
+      }
+    };
+    checkSession();
+  }, [])
   return (
     <BrowserRouter>
       <Toaster />

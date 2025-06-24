@@ -1,7 +1,14 @@
 import { getTodayWeather } from "@/api/weather";
 import React, { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -15,17 +22,23 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const WeatherGraph = () => {
-  const [hourlyData, setHourlyData] = useState();
+import { format, parseISO } from "date-fns";
+const WeatherGraph = ({ lat, lon }) => {
+  const [hourlyData, setHourlyData] = useState([]);
 
   const fetchHouryWeatherData = async (lat, lon) => {
+    if (!lat || !lon) {
+      console.error("Latitude or Longitude is missing!", { lat, lon });
+      return null;
+    }
+
     try {
       const weatherData = await getTodayWeather({ lat, lon });
 
       if (!weatherData.list) return;
 
       const hourelyForecaseData = weatherData.list.slice(0, 8).map((item) => ({
-        time: item.dt_txt.split(" ")[1],
+        time: format(parseISO(item.dt_txt), "h a"),
         temp: item.main.temp,
       }));
 
@@ -42,32 +55,11 @@ const WeatherGraph = () => {
     },
   };
 
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchHouryWeatherData(latitude, longitude);
-        },
-        (error) => {
-          console.error("Error fetching weather:", error);
-          if (error.code === error.PERMISSION_DENIED) {
-            setError("Please allow to access location");
-          } else if (error.code === error.POSITION_UNAVAILABLE) {
-            setError("Location information is unavailable.");
-          } else {
-            setError("Failed to fetch weather data.");
-          }
-        },
-      );
-    } else {
-      setError("GeoLocation is not supported");
-    }
-  };
-
   useEffect(() => {
-    getLocation();
-  }, []);
+    if (lat && lon) {
+      fetchHouryWeatherData(lat, lon);
+    }
+  }, [lat, lon]);
 
   return (
     <>
@@ -92,16 +84,20 @@ const WeatherGraph = () => {
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="time"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 2)}
-                  className="text-muted-foreground text-base font-semibold"
+                  tickFormatter={(value) => value}
+                  tick={{ dy: 10 }}
+                  className="text-muted-foreground text-sm font-medium"
+                />
+                <YAxis
+                  tick={{ dx: -10 }}
+                  tickFormatter={(temp) => `${temp}°C`}
+                  className="text-muted-foreground text-sm font-medium"
                 />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent indicator="dot" hideLabel />}
                 />
+                <Tooltip formatter={(value) => `${value}°C`} />
                 <Area
                   dataKey="temp"
                   type="linear"
