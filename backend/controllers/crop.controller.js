@@ -2,131 +2,274 @@ import mongoose from "mongoose";
 import Crops from "../models/crop.model.js";
 import User from "../models/user.model.js";
 
-
+// Add New Crop
 export const addNewCrop = async (req, res) => {
-	try {
-		const {
-			name,
-			description,
-			cropVariety,
-			cropAge,
-			harvestDate,
-			fertilizerUsed,
-			pesticidesUsed,
-			soilType,
-			moistureContent,
-			processingDetails,
-			totalQuantity,
-			unitOfcrop,
-			pricePerUnit,
-			negotiable,
-			storageType,
-			cropImagesUrl,
-			userId
-		} = req.body;
-		// const uploadedImages = req.files.map((file) => ({
-		// 	url: file.path,
-		// }));
+  // Destructure all required fields from req.body
+  const {
+    name,
+    description,
+    cropVariety,
+    cropAge,
+    harvestDate,
+    fertilizerUsed,
+    pesticidesUsed,
+    soilType,
+    moistureContent,
+    processingDetails,
+    qualityGrade,
+    certifications,
+    quantityAvailable,
+    totalQuantity,
+    unitOfcrop,
+    pricePerUnit,
+    bulkDiscount,
+    negotiable,
+    storageType,
+    deliveryOptions,
+  } = req.body;
 
+  // Handle files (images/videos)
+  const files = req.files || [];
+  const cropImagesUrl = [];
+  const cropVideosUrl = [];
+  files.forEach((file) => {
+    if (file.mimetype.startsWith("image/")) {
+      cropImagesUrl.push({ url: file.path });
+    } else if (file.mimetype.startsWith("video/")) {
+      cropVideosUrl.push({ url: file.path });
+    }
+  });
 
-		const newCrop = new Crops({
-			name,
-			description,
-			cropVariety,
-			cropAge,
-			harvestDate,
-			fertilizerUsed,
-			pesticidesUsed,
-			soilType,
-			moistureContent,
-			processingDetails,
-			quantityAvailable: totalQuantity,
-			totalQuantity,
-			unitOfcrop,
-			pricePerUnit,
-			negotiable,
-			storageType,
-			cropImagesUrl: cropImagesUrl,
-			farmer: userId,
-		});
+  // Required field validation
+  if (!name || !description || !totalQuantity || !unitOfcrop || !pricePerUnit) {
+    return res
+      .status(400)
+      .json({ message: "All required fields must be filled!" });
+  }
 
-		await newCrop.save();
+  try {
+    // Additional validation
+    if (isNaN(totalQuantity) || totalQuantity <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Total Quantity must be a positive number!" });
+    }
+    if (isNaN(pricePerUnit) || pricePerUnit < 0) {
+      return res
+        .status(400)
+        .json({ message: "Price per unit must be a non-negative number!" });
+    }
+    if (
+      moistureContent &&
+      (isNaN(moistureContent) || moistureContent < 0 || moistureContent > 100)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Moisture content must be between 0 and 100!" });
+    }
 
-		return res.status(201).json({
-			success: true,
-			message: "Crop added successfully!",
-			crop: newCrop,
-		});
-	} catch (error) {
-		console.error("Error adding crop:", error);
-		return res.status(500).json({ success: false, message: "Server error" });
-	}
+    // Prepare certifications array
+    let certificationsArr = [];
+    if (certifications) {
+      if (Array.isArray(certifications)) {
+        certificationsArr = certifications;
+      } else {
+        certificationsArr = certifications.split(",").map((c) => c.trim());
+      }
+    }
+
+    const newCrop = new Crops({
+      name,
+      description,
+      cropVariety,
+      cropAge: cropAge
+        ? typeof cropAge === "object"
+          ? cropAge
+          : {
+              value: req.body["cropAge[value]"],
+              unit: req.body["cropAge[unit]"],
+            }
+        : undefined,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications: certificationsArr,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+      cropImagesUrl,
+      cropVideosUrl,
+      // Add farmer if you have authentication
+      // farmer: req.user?._id,
+    });
+
+    console.log(newCrop);
+    const savedCrop = await newCrop.save();
+    res
+      .status(201)
+      .json({ message: "Crop added successfully!", crop: savedCrop });
+  } catch (error) {
+    console.error("Error adding crop:", error);
+    res.status(500).json({ message: "Internal server error!" });
+  }
 };
 
+// Get Single Crop
 export const getCrop = async (req, res) => {
-	try {
-		const { cropId } = req.params;
-		const crops = await Crops.findById(cropId).sort({ createdAt: -1 });
-		if (!crops) {
-			return res.status(404).json({
-				success: false,
-				message: "crop not found"
-			})
-		}
-
-		return res.status(200).json({
-			success: true,
-			message: crops
-		})
-	} catch (error) {
-		res.status(500).json({
-			success: false,
-			message: "Server error"
-		});
-	}
+  try {
+    const cropId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(cropId)) {
+      return res.status(400).json({ message: "Invalid crop ID!" });
+    }
+    const crop = await Crops.findById(cropId).populate("farmer");
+    if (!crop) {
+      return res.status(404).json({ message: "Crop not found!" });
+    }
+    return res.status(200).json(crop);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error!" });
+  }
 };
 
+// Get All Crops
 export const getCrops = async (req, res) => {
-	try {
-		const { id } = req.params;
-
-		const user = await User.findById(id).populate('crops').select("crops");
-		if (!user) {
-			return res.status(404).json({
-				success: false,
-				message: "User not found"
-			})
-		}
-		return res.status(200).json({
-			success: true,
-			message: user
-		})
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({
-			success: false,
-			message: "Server error"
-		});
-	}
+  try {
+    const crops = await Crops.find().populate("farmer");
+    if (!crops || crops.length === 0) {
+      return res.status(404).json({ message: "No crops found!" });
+    }
+    return res.status(200).json(crops);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error!" });
+  }
 };
 
+// Remove Crop
 export const removeCrop = async (req, res) => {
-	try {
-		const id = req.params.id;
-		await Crops.findByIdAndDelete(id);
-
-		return res.status(200).json({
-			success: true,
-			message: "Crops deleted successfully",
-		})
-
-	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			success: false,
-			message: "Server error"
-		});
-	}
+  try {
+    const cropId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(cropId)) {
+      return res.status(400).json({ message: "Invalid crop ID!" });
+    }
+    const deletedCrop = await Crops.findByIdAndDelete(cropId);
+    if (!deletedCrop) {
+      return res.status(404).json({ message: "Crop not found!" });
+    }
+    return res.status(200).json({ message: "Crop deleted successfully!" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error!" });
+  }
 };
 
-export const updateCrop = async (req, res) => { };
+// Update Crop
+export const updateCrop = async (req, res) => {
+  try {
+    const cropId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(cropId)) {
+      return res.status(400).json({ message: "Invalid crop ID!" });
+    }
+
+    const {
+      name,
+      description,
+      cropVariety,
+      cropAge,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+    } = req.body;
+
+    // Handle files (images/videos)
+    const files = req.files || [];
+    const cropImagesUrl = [];
+    const cropVideosUrl = [];
+    files.forEach((file) => {
+      if (file.mimetype.startsWith("image/")) {
+        cropImagesUrl.push({ url: file.path });
+      } else if (file.mimetype.startsWith("video/")) {
+        cropVideosUrl.push({ url: file.path });
+      }
+    });
+
+    // Prepare certifications array
+    let certificationsArr = [];
+    if (certifications) {
+      if (Array.isArray(certifications)) {
+        certificationsArr = certifications;
+      } else {
+        certificationsArr = certifications.split(",").map((c) => c.trim());
+      }
+    }
+
+    const updatedCrop = {
+      name,
+      description,
+      cropVariety,
+      cropAge: cropAge
+        ? typeof cropAge === "object"
+          ? cropAge
+          : {
+              value: req.body["cropAge[value]"],
+              unit: req.body["cropAge[unit]"],
+            }
+        : undefined,
+      harvestDate,
+      fertilizerUsed,
+      pesticidesUsed,
+      soilType,
+      moistureContent,
+      processingDetails,
+      qualityGrade,
+      certifications: certificationsArr,
+      quantityAvailable,
+      totalQuantity,
+      unitOfcrop,
+      pricePerUnit,
+      bulkDiscount,
+      negotiable,
+      storageType,
+      deliveryOptions,
+      cropImagesUrl,
+      cropVideosUrl,
+    };
+
+    const crop = await Crops.findById(cropId);
+    if (!crop) {
+      return res.status(404).json({ message: "Crop not found!" });
+    }
+
+    const updatedCropData = await Crops.findByIdAndUpdate(cropId, updatedCrop, {
+      new: true,
+    });
+    if (!updatedCropData) {
+      return res.status(404).json({ message: "Crop not found!" });
+    }
+    return res
+      .status(200)
+      .json({ message: "Crop updated successfully!", crop: updatedCropData });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error!" });
+  }
+};

@@ -11,6 +11,7 @@ router.post("/signup", async (req, res) => {
   const profileUrl = req.file ? req.file.path : "";
   try {
     const user = new User({ email, password, name, profileUrl });
+    console.log(user);
     await user.save();
     req.login(user, (err) => {
       if (err) return res.status(500).json({ error: err.message });

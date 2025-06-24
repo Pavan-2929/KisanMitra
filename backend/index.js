@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.routes.js";
 import cropRouter from "./routes/crop.routes.js";
 import blogRouter from "./routes/blog.routes.js";
+import reviewRouter from "./routes/review.routes.js";
+import queryRouter from "./routes/query.routes.js";
 import dealerRouter from "./routes/dealer.routes.js";
 import session from "express-session";
 import passport from "passport";
@@ -64,6 +66,8 @@ mongoose
 app.use("/api/auth", userRouter);
 app.use("/api/crops", cropRouter);
 app.use("/api/blogs", blogRouter);
+app.use("/api/review", reviewRouter);
+app.use("/api/query", queryRouter);
 app.use("/api", dealerRouter);
 
 app.use((err, req, res, next) => {
@@ -77,5 +81,3 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-
-//hiiiiii

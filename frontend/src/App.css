@@ -1,0 +1,44 @@
+/* Sidebar initial hidden state */
+#bot {
+  position: fixed;
+  top: 0;
+  right: 0; /* corrected: was "right: -400" which is invalid (missing unit) */
+  height: 100vh;
+  transform: translateX(100%); /* hides it off-screen to the right */
+  z-index: 1000;
+}
+
+/* Slide in animation */
+.chatbot {
+  animation: slideIn 1s ease-in-out forwards;
+}
+
+/* Slide out animation */
+.hidebot {
+  animation: slideOut 1s ease-in forwards;
+  transform: translateX(100%);
+}
+
+/* Keyframes to slide in from right */
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Keyframes to slide out to right */
+@keyframes slideOut {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
