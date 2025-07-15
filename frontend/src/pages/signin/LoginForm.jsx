@@ -14,11 +14,17 @@ import {
 import { FormInput } from "@/components/controls/FormInput";
 import { Lock, Mail, User } from "lucide-react";
 import LoadingButton from "@/components/controls/LoadingButton";
+import { useDispatch } from "react-redux";
 import { PasswordInput } from "@/components/controls/PasswordInput";
+import { login, logout } from "@/lib/authSlice";
+import { useNavigate } from "react-router-dom";
+
 
 const LoginForm = () => {
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(LoginSchema),
@@ -29,7 +35,6 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values) => {
-    console.log("Asdasdasd")
     try {
       const { email, password } = values;
       console.log(email);
@@ -41,7 +46,11 @@ const LoginForm = () => {
         },
         withCredentials: true
       })
-      console.log(res.data.token);
+      if (res.data) {
+        localStorage.setItem("userId", JSON.stringify(res.data.userId));
+        dispatch(login());
+        navigate("/");
+      }
     } catch (error) {
       console.log(error)
     }

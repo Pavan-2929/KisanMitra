@@ -5,35 +5,34 @@ import Weather from "./pages/weather/Weather";
 import Home from "./pages/home/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Blog from "./pages/blog";
 import ChatBot from "./components/ChatBot";
-import Crop from "./pages/Crop";
+import UploadCrop from "./pages/UploadCrop";
 import { Toaster } from 'react-hot-toast';
-import { useEffect } from "react";
-import axios from "axios";
+import Crops from "./pages/Crops";
+import CropInformation from "./pages/CropInformation";
+import Blogs from "./pages/Blogs";
+import { useSelector } from "react-redux";
+import UploadBlog from "./pages/UploadBlog";
+import Profile from "./components/Profile";
 
 function App() {
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth/me", { withCredentials: true, headers: { "Content-Type": "application/json" } });
-        console.log("User session active:", res.data);
-      } catch (error) {
-        console.log("No active session", error);
-      }
-    };
-    checkSession();
-  }, [])
+  const isLogin = useSelector((state) => state.auth.isLogin);
+
   return (
     <BrowserRouter>
       <Toaster />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signin" element={<SignIn />} />
+        {!isLogin && <Route path="/signin" element={<SignIn />} />}
         <Route path="/weather" element={<Weather />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/crop" element={<Crop />} />
+        <Route path="/blogs" element={<Blogs />} />
+        {isLogin && <Route path="/upload-crop" element={<UploadCrop />} />}
+        <Route path="/all-crops" element={<Crops />} />
+        {isLogin && <Route path="/crop-information/:id" element={<CropInformation />} />}
+        {isLogin && <Route path="/upload-blog" element={<UploadBlog />} />}
+        {<Route path="/profile" element={<div className="text-center py-10"><Profile /></div>} />}
+        <Route path="*" element={<div className="text-center py-10">Page Not Found</div>} />
       </Routes>
       <Footer />
       <ChatBot />

@@ -14,6 +14,7 @@ import { FormInput } from "@/components/controls/FormInput";
 import { Lock, Mail, User } from "lucide-react";
 import LoadingButton from "@/components/controls/LoadingButton";
 import { PasswordInput } from "@/components/controls/PasswordInput";
+import axios from "axios";
 
 const RegisterForm = () => {
   const [error, setError] = useState();
@@ -29,8 +30,24 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (values) => {
-    const { email } = values;
+    console.log(values)
+    const fullName = values.username;
+    const email = values.email;
+    const password = values.password;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register", { fullName, email, password }, { headers: { "Content-Type": "application/json", } }
+      );
 
+      console.log(res);
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      setError("Failed to submit form. Please try again.");
+    } finally {
+      setLoading(false);
+    }
     console.log(email);
   };
 

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import Crops from "../models/crop.model.js";
 import User from "../models/user.model.js";
 
@@ -40,11 +40,36 @@ export const addNewCrop = async (req, res) => {
     }
   });
 
+  const userId = req.headers.userid;
+  console.log(userId);
   // Required field validation
-  if (!name || !description || !totalQuantity || !unitOfcrop || !pricePerUnit) {
+  if (
+    !name ||
+    !description ||
+    !totalQuantity ||
+    !unitOfcrop ||
+    !pricePerUnit ||
+    !userId
+  ) {
     return res
       .status(400)
       .json({ message: "All required fields must be filled!" });
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found!" });
+  }
+
+  if (
+    user.fullName == "" ||
+    user.fullName == null ||
+    user.phone == "" ||
+    user.phone == null ||
+    user.address == "" ||
+    user.address == null
+  ) {
+    return res.redirect("/profile");
   }
 
   try {
@@ -108,8 +133,7 @@ export const addNewCrop = async (req, res) => {
       deliveryOptions,
       cropImagesUrl,
       cropVideosUrl,
-      // Add farmer if you have authentication
-      // farmer: req.user?._id,
+      farmer: userId,
     });
 
     console.log(newCrop);
@@ -127,10 +151,14 @@ export const addNewCrop = async (req, res) => {
 export const getCrop = async (req, res) => {
   try {
     const cropId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(cropId)) {
-      return res.status(400).json({ message: "Invalid crop ID!" });
-    }
-    const crop = await Crops.findById(cropId).populate("farmer");
+    console.log("Fetching crop with ID:", cropId);
+    console.log(typeof cropId);
+
+    const crop = await Crops.findById(cropId).populate(
+      "farmer",
+      "fullName email profile address phone"
+    );
+    console.log("Crop found:", crop);
     if (!crop) {
       return res.status(404).json({ message: "Crop not found!" });
     }
@@ -143,10 +171,12 @@ export const getCrop = async (req, res) => {
 // Get All Crops
 export const getCrops = async (req, res) => {
   try {
-    const crops = await Crops.find().populate("farmer");
+    const crops = await Crops.find();
+    console.log(crops);
     if (!crops || crops.length === 0) {
       return res.status(404).json({ message: "No crops found!" });
     }
+
     return res.status(200).json(crops);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error!" });
@@ -271,5 +301,20 @@ export const updateCrop = async (req, res) => {
       .json({ message: "Crop updated successfully!", crop: updatedCropData });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error!" });
+  }
+};
+
+export const addInterestedDealer = async (req, res) => {
+  const cropId = req.params.id;
+  const { dealerId } = req.body; // Get dealerId from request (or from auth middleware)
+  try {
+    const crop = await Crops.findByIdAndUpdate(
+      cropId,
+      { $addToSet: { interestedDealers: { user: dealerId } } },
+      { new: true }
+    );
+    res.json({ message: "Interest registered", crop });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to register interest" });
   }
 };

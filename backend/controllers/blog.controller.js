@@ -6,7 +6,11 @@ import deleteCloudinaryFile from "../utils/deleteCloudinaryFile.js";
 //Adding New Blog
 export const addNewBlog = async (req, res) => {
   try {
-    const { title, description, userId } = req.body;
+    const { title, description } = req.body;
+    console.log("ADDING...");
+    console.log(title, description);
+    console.log(req.files);
+    const userId = req.headers.userid;
 
     if (!title || !description || !userId) {
       return res
