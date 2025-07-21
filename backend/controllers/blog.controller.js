@@ -7,9 +7,6 @@ import deleteCloudinaryFile from "../utils/deleteCloudinaryFile.js";
 export const addNewBlog = async (req, res) => {
   try {
     const { title, description } = req.body;
-    console.log("ADDING...");
-    console.log(title, description);
-    console.log(req.files);
     const userId = req.headers.userid;
 
     if (!title || !description || !userId) {
@@ -32,10 +29,10 @@ export const addNewBlog = async (req, res) => {
       author: userId,
     });
 
-    newBlog.save();
+    await newBlog.save();
 
     existingUser.blogs.push(newBlog._id);
-    existingUser.save();
+    await existingUser.save();
 
     return res.status(200).json({ message: "Your blog created successfully!" });
   } catch (error) {
@@ -51,7 +48,16 @@ export const getBlog = async (req, res) => {
       return res.status(400).json({ message: "Invalid blog Id!" });
     }
 
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(blogId)
+      .populate({
+        path: "comments.user",
+        select: "fullName",
+      })
+      .populate({
+        path: "author",
+        select: "fullName",
+      });
+
     if (!blog) {
       return res.status(404).json({ message: "Blog not exist!" });
     }
@@ -133,7 +139,7 @@ export const updateBlog = async (req, res) => {
       select: "-password",
     });
 
-    if (!updateBlog) {
+    if (!updatedBlog) {
       return res.status(404).json({ message: "Blog not found!" });
     }
 
@@ -175,7 +181,7 @@ export const toggleBlogLike = async (req, res) => {
 
     return res.status(200).json({
       message: hasLiked ? "Blog unliked!" : "Blog liked!",
-      likesCount: blog.likes.length,
+      likes: blog.likes, // <-- send the array, not just the count
     });
   } catch (error) {
     return res.status(500).json({ message: "Interval server error!" });
@@ -187,7 +193,6 @@ export const commentToBlog = async (req, res) => {
   try {
     const { blogId } = req.params;
     const { userId, text } = req.body;
-
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return res.status(400).json({ message: "Invalid blog Id!" });
     }
@@ -195,6 +200,7 @@ export const commentToBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ message: "Blog not found!" });
     }
+    console.log("Adding comment to blog:", blogId, userId, text);
 
     blog.comments.push({ user: userId, text });
     await blog.save();

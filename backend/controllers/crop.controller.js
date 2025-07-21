@@ -305,9 +305,23 @@ export const updateCrop = async (req, res) => {
 };
 
 export const addInterestedDealer = async (req, res) => {
-  const cropId = req.params.id;
-  const { dealerId } = req.body; // Get dealerId from request (or from auth middleware)
   try {
+    const cropId = req.params.id;
+    const { dealerId } = req.body; // Get dealerId from request (or from auth middleware)
+    const cropExists = await Crops.findById(cropId);
+    if (!cropExists) {
+      return res.status(404).json({ message: "Crop not found!" });
+    }
+
+    const alreadyInterested = cropExists.interestedDealers.some(
+      (dealer) => dealer.user.toString() === dealerId
+    );
+
+    if (alreadyInterested) {
+      return res
+        .status(400)
+        .json({ message: "Dealer already registered interest in this crop." });
+    }
     const crop = await Crops.findByIdAndUpdate(
       cropId,
       { $addToSet: { interestedDealers: { user: dealerId } } },

@@ -84,23 +84,25 @@ const Weather = () => {
   }, [query]);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-10 py-16">
-      <div className="flex items-center justify-between">
-        <div className="relative">
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-            placeholder="Search for a location..."
-            className="bg-input text-foreground/80 h-10 w-[300px] rounded-xl pe-12 font-medium placeholder:text-[15px] placeholder:font-medium"
-          />
-          <button
-            type="button"
-            className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer"
-          >
-            <SearchIcon className="text-muted-foreground size-5" />
-          </button>
+    <div className="mx-auto max-w-7xl space-y-10 py-16 px-2">
+      <div className="flex flex-col lg:flex-row items-start  lg:items-center space-y-3 lg:justify-between">
+        <div className="relative px-4">
+          <div className="   flex items-center justify-center bg-input rounded-xl px-3 ">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+              placeholder="Search for a location..."
+              className=" text-foreground/80 h-10 lg:w-[300px] rounded-xl pe-12 font-medium placeholder:text-[15px] placeholder:font-medium outline-none"
+            />
+            <button
+              type="button"
+              className=" "
+            >
+              <SearchIcon className="text-muted-foreground size-5" />
+            </button>
+          </div>
           {showSuggestions && suggestions.length > 0 && (
             <ul className="bg-accent absolute top-full left-0 z-10 mt-1 w-full overflow-auto rounded-lg shadow-xl">
               {suggestions.map((city, index) => (
@@ -122,16 +124,16 @@ const Weather = () => {
           )}
         </div>
         <Stamp>
-          <p>{format(currentTime, "MMMM d, yyyy")}</p>
+          <p >{format(currentTime, "MMMM d, yyyy")}</p>
         </Stamp>{" "}
       </div>
       {weatherData && !error && (
-        <div className="flex justify-between gap-10">
-          <div className="w-[40%] space-y-10">
+        <div className="flex flex-col lg:flex-row justify-between gap-10">
+          <div className="lg:w-[40%] space-y-10">
             <WeatherCard weatherData={weatherData} />
             <PopularWeather />
           </div>
-          <div className="w-[57%] space-y-10">
+          <div className="lg:w-[57%] space-y-10">
             <WeatherHighlight weatherData={weatherData} />
             <WeatherGraph lat={lat} lon={lon} />
           </div>

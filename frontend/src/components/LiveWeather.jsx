@@ -70,19 +70,22 @@ const LiveWeather = () => {
       ) : (
         <>
           <div className="text-end">
-            <h2 className="text-primary font-serif text-xl font-semibold">
+            <h2 className="text-primary font-serif text-sm lg:text-xl font-semibold">
               {weatherData?.name}
             </h2>
-            <p className="text-muted-foreground font-medium italic">
+            <p className="text-muted-foreground text-sm lg:font-medium italic">
               Your City
+            </p>
+            <p className=" text-primary font-serif md:hidden text-lg lg:text-xl font-semibold">
+              {weatherData?.main?.temp} °C
             </p>
           </div>
           <div className="bg-muted-foreground h-14 w-[2px]"></div>
           <div className="text-start">
-            <h2 className="text-primary font-serif text-xl font-semibold">
+            <h2 className="text-primary font-serif md:block hidden text-xl font-semibold">
               {weatherData?.main?.temp} °C
             </h2>
-            <p className="text-muted-foreground font-medium italic">
+            <p className="text-muted-foreground md:block hidden font-medium italic">
               Temparature
             </p>
           </div>

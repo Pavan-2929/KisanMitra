@@ -16,7 +16,7 @@ const CropInformation = () => {
     useEffect(() => {
         const fetchCrop = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/crops/get-crop/${id}`);
+                const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/crops/get-crop/${id}`);
                 console.log("Fetched crop data:", res.data);
                 setCrop(res.data);
                 setfarmer(res?.data?.farmer);

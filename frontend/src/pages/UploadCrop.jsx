@@ -119,7 +119,7 @@ const UploadCrop = () => {
         console.log(userId);
         try {
             const res = await axios.post(
-                "http://localhost:5000/api/crops/add-new-crop",
+                `${import.meta.env.VITE_SERVER_URL}/api/crops/add-new-crop`,
                 formData,
                 {
                     headers: {

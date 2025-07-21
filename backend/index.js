@@ -45,14 +45,11 @@ app.use(
       secure: false,
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
-
     },
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -12,6 +12,7 @@ import UserAvatar from "@/components/controls/UserAvatar";
 import { NavLink } from "react-router-dom";
 import LiveWeather from "./LiveWeather";
 import { useSelector } from "react-redux";
+import Translate from "./controls/Translate";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -34,29 +35,29 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className="w-full z-30">
+    <header className="w-full z-30 overflow-hidden">
       {/* Top bar */}
       <div className="bg-accent border-b py-1">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <NavLink to="/">
             <img src={logo} alt="Logo" className="h-16 w-20" />
           </NavLink>
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden ml-2 p-2 rounded hover:bg-gray-100"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={24} /> : <Menu className="" size={24} />}
+          </button>
           <LiveWeather />
           <div className="flex items-center gap-6">
             <div className="flex cursor-pointer items-center gap-2">
               <GlobeIcon className="text-muted-foreground size-5" />
-              <span className="text-muted-foreground text-sm font-medium">EN</span>
-              <ChevronDown className="text-muted-foreground size-4" />
+
+              <Translate />
             </div>
             <UserAvatar />
-            {/* Hamburger for mobile */}
-            <button
-              className="md:hidden ml-2 p-2 rounded hover:bg-gray-100"
-              onClick={() => setMenuOpen((prev) => !prev)}
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
       </div>
@@ -87,7 +88,7 @@ const Navbar = () => {
           </div>
           {/* Mobile menu */}
           {menuOpen && (
-            <div className="md:hidden absolute left-0 top-full w-full bg-primary text-primary-foreground shadow-lg flex flex-col gap-2 py-4 px-6">
+            <div className="md:hidden left-0 top-0 w-full bg-primary text-primary-foreground shadow-lg flex flex-col gap-2 py-4 px-6">
               {navLinks.map((link) => (
                 <NavLink
                   key={link.to}

@@ -14,29 +14,34 @@ import Blogs from "./pages/Blogs";
 import { useSelector } from "react-redux";
 import UploadBlog from "./pages/UploadBlog";
 import Profile from "./components/Profile";
+import Translate from "./components/controls/Translate";
+import Blog from "./pages/Blog";
 
 function App() {
   const isLogin = useSelector((state) => state.auth.isLogin);
 
   return (
-    <BrowserRouter>
-      <Toaster />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {!isLogin && <Route path="/signin" element={<SignIn />} />}
-        <Route path="/weather" element={<Weather />} />
-        <Route path="/blogs" element={<Blogs />} />
-        {isLogin && <Route path="/upload-crop" element={<UploadCrop />} />}
-        <Route path="/all-crops" element={<Crops />} />
-        {isLogin && <Route path="/crop-information/:id" element={<CropInformation />} />}
-        {isLogin && <Route path="/upload-blog" element={<UploadBlog />} />}
-        {<Route path="/profile" element={<div className="text-center py-10"><Profile /></div>} />}
-        <Route path="*" element={<div className="text-center py-10">Page Not Found</div>} />
-      </Routes>
-      <Footer />
-      <ChatBot />
-    </BrowserRouter>
+    <div className=" overflow-hidden">
+      <BrowserRouter>
+        <Toaster />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {!isLogin && <Route path="/signin" element={<SignIn />} />}
+          <Route path="/weather" element={<Weather />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blog/:id" element={<Blog />} />
+          {isLogin && <Route path="/upload-crop" element={<UploadCrop />} />}
+          <Route path="/all-crops" element={<Crops />} />
+          {isLogin && <Route path="/crop-information/:id" element={<CropInformation />} />}
+          {isLogin && <Route path="/upload-blog" element={<UploadBlog />} />}
+          {<Route path="/profile" element={<div className="text-center py-10"><Profile /></div>} />}
+          <Route path="*" element={<div className="text-center py-10">Page Not Found</div>} />
+        </Routes>
+        <Footer />
+        <ChatBot />
+      </BrowserRouter>
+    </div>
   );
 }
 

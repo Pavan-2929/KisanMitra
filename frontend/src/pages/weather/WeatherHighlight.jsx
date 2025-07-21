@@ -9,7 +9,7 @@ const WeatherHighlight = ({ weatherData }) => {
       <div>
         <h1 className="text-2xl font-semibold">Today&apos;s highlights</h1>
       </div>
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-3 lg:grid-cols-4 gap-5">
         <div className="rounded-lg border p-3">
           <div className="flex items-center gap-3">
             <Droplets className="size-5" />

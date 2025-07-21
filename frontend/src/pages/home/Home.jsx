@@ -20,13 +20,13 @@ const Home = () => {
         style={{ backgroundImage: `url(${backgroundImage})` }}
         className="h-[90vh] w-full bg-cover bg-center"
       >
-        <div className="text-primary-foreground h-[90vh] bg-black/50 px-14 pt-40">
-          <div className="mx-auto flex max-w-7xl justify-between items-center px-7">
-            <div className="w-1/2 space-y-14">
-              <h1 className="font-serif text-5xl leading-[64px] font-semibold tracking-wide">
+        <div className="text-primary-foreground h-[90vh] bg-black/50 px- lg:px-14 pt-40">
+          <div className="mx-auto flex w-full lg:max-w-7xl justify-between items-center px-7">
+            <div className="w-full lg:w-1/2 space-y-7 lg:space-y-14">
+              <h1 className="font-serif text-4xl lg:text-5xl lg:leading-[64px] font-semibold tracking-wide text-center">
                 Farmers plant hope, harvest strength.{" "}
               </h1>
-              <p className="text-lg leading-8 font-medium tracking-wide">
+              <p className="text-lg leading-8 font-medium tracking-wide text-center">
                 {" "}
                 Farmers are the heart of our land, turning hard work into
                 harvests and hope into growth. With unwavering dedication and
@@ -36,7 +36,7 @@ const Home = () => {
               </p>
             </div>
             <div>
-              <img src={welcomeFarmerImage} alt="" className="w-80 opacity-90"/>
+              <img src={welcomeFarmerImage} alt="" className="hidden lg:block w-80 opacity-90" />
             </div>
           </div>
         </div>
@@ -45,15 +45,15 @@ const Home = () => {
         <div className="py-20">
           <div className="mx-auto max-w-7xl space-y-28 px-7">
             <div className="space-y-7 text-center text-4xl font-bold">
-              <h1>Uplaod your corps details and</h1>
-              <h1>
+              <h1>Upload your crops details and</h1>
+              <h1 className=" bg-primary text-white py-1 md:bg-accent">
                 get{" "}
-                <span className="bg-primary rounded-sm px-2 py-1 text-white">
+                <span className="md:bg-primary rounded-sm px-2 py-1 md:text-white">
                   best value without middleman
                 </span>
               </h1>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between overflow-x-scroll">
               <img src={middlemanImage} alt="" />
               <img src={arrowImage} alt="" />
               <img src={nomiddlemantImage} alt="" />
@@ -65,7 +65,7 @@ const Home = () => {
             <div>
               <h1 className="text-center text-4xl font-bold">Why Choose Us?</h1>
             </div>
-            <div className="grid grid-cols-3 gap-16">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-16">
               <div>
                 <img src={ecommerceImage} alt="" className="mx-auto size-14" />
                 <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
@@ -107,7 +107,7 @@ const Home = () => {
                   className="mx-auto size-14"
                 />
                 <h2 className="text-primary pt-5 pb-2 text-center text-xl font-semibold">
-                  Hire contracgtors
+                  Hire contractors
                 </h2>
                 <p className="text-muted-foreground px-7 text-sm leading-6">
                   Simplify your project management by finding and hiring skilled
