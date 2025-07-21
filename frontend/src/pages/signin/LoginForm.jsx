@@ -38,7 +38,7 @@ const LoginForm = () => {
     try {
       const { email, password } = values;
       console.log(email);
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
         email, password
       }, {
         headers: {

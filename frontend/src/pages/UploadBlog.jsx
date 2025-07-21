@@ -58,7 +58,7 @@ const UploadBlog = () => {
             console.log(content);
             console.log(formData)
             const userId = JSON.parse(localStorage.getItem("userId"));
-            const res = await axios.post("http://localhost:5000/api/blogs/add-new-blog", formData, {
+            const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/blogs/add-new-blog`, formData, {
                 headers: {
                     "userId": userId, // Assuming userId is stored in localStorage
                 },

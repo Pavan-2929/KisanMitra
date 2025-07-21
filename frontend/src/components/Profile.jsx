@@ -23,7 +23,7 @@ const Profile = () => {
                 // Get userId from localStorage or Redux
                 const userId = JSON.parse(localStorage.getItem("userId"));
                 console.log("Fetching user with ID:", userId);
-                const res = await axios.get(`http://localhost:5000/api/auth/get-user/${userId}`);
+                const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/auth/get-user/${userId}`);
                 console.log(res.data?.user)
                 setUser(res.data?.user);
                 setForm(res.data?.user);
@@ -64,29 +64,20 @@ const Profile = () => {
 
         try {
             const userId = user._id || user.userId;
+            const data = new FormData();
 
             // If a new image file is selected, send it with FormData to backend
             if (profileImageFile) {
-                const data = new FormData();
                 data.append("image", profileImageFile);
-                data.append("form", JSON.stringify(form)); // send other fields as well
-
-                const res = await axios.put(
-                    `http://localhost:5000/api/users/${userId}/update-with-image`,
-                    data,
-                    { headers: { "Content-Type": "multipart/form-data" } }
-                );
-                setUser(res.data);
-                setForm(res.data);
-            } else {
-                // No new image, just send JSON
-                const res = await axios.put(
-                    `http://localhost:5000/api/users/${userId}`,
-                    form
-                );
-                setUser(res.data);
-                setForm(res.data);
             }
+            // No new image, just send JSON
+            data.append("")
+            const res = await axios.put(
+                `${import.meta.env.VITE_SERVER_URL}/api/auth/update-user/${userId}`,
+                form
+            );
+            setUser(res.data);
+            setForm(res.data);
 
             setEdit(false);
             setProfileImageFile(null);

@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 const Blogs = () => {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/blogs/get-all-blogs");
+                const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/blogs/get-all-blogs`);
+                console.log(res.data);
                 setBlogs(res.data.allBlogs || []);
             } catch (error) {
                 setBlogs([]);
@@ -33,7 +36,7 @@ const Blogs = () => {
             <h1 className="text-3xl font-bold text-green-700 mb-8 text-center">All Blogs</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
-                    <Card key={blog._id} className="shadow-lg hover:shadow-2xl transition-shadow duration-200">
+                    <Card key={blog._id} className="shadow-lg hover:shadow-2xl transition-shadow duration-200" onClick={() => navigate(`/blog/${blog._id}`)}>
                         <CardContent className="p-5 flex flex-col h-full">
                             <h2 className="text-xl font-semibold text-green-800 mb-2">{blog.title}</h2>
                             <div className="text-gray-600 text-sm mb-2">

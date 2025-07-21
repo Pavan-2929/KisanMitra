@@ -10,8 +10,8 @@ import {
 
 const FAQs = () => {
   return (
-    <div className="mx-auto my-20 grid max-w-7xl grid-cols-3 items-start gap-14 px-7">
-      <div className="col-span-1 flex justify-center pt-28">
+    <div className="mx-auto lg:my-20 grid max-w-7xl lg:grid-cols-3 items-start gap-14 px-7">
+      <div className="col-span-1 flex justify-center pt-20 lg:pt-28">
         <img
           src={farmerThinkingImage}
           alt="Farmer Thinking"
@@ -19,7 +19,7 @@ const FAQs = () => {
         />
       </div>
 
-      <div className="col-span-2 space-y-5">
+      <div className="col-span-2 space-y-5 pr-2">
         <h2 className="mb-14 text-4xl font-bold">
           Frequently Asked Questions
         </h2>

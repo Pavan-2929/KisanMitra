@@ -10,15 +10,18 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { toast } from "react-hot-toast";
 import { FormInput } from "@/components/controls/FormInput";
 import { Lock, Mail, User } from "lucide-react";
 import LoadingButton from "@/components/controls/LoadingButton";
 import { PasswordInput } from "@/components/controls/PasswordInput";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm({
     resolver: zodResolver(RegisterSchema),
@@ -37,13 +40,18 @@ const RegisterForm = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log(fullName, email, password);
       const res = await axios.post(
-        "http://localhost:5000/api/auth/register", { fullName, email, password }, { headers: { "Content-Type": "application/json", } }
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/register`, { fullName, email, password }, { headers: { "Content-Type": "application/json", } }
       );
 
+      toast.success(res.data.message || "Registration successful!");
+      navigate("/signin");
+      form.reset();
       console.log(res);
     } catch (err) {
       console.error("Error submitting form:", err);
+      toast.error(err.response?.data?.message || "Internal server error!");
       setError("Failed to submit form. Please try again.");
     } finally {
       setLoading(false);
