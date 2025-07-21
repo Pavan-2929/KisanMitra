@@ -35,7 +35,7 @@ const ChatBot = () => {
                         <iframe
                             src="https://cdn.botpress.cloud/webchat/v3.0/shareable.html?configUrl=https://files.bpcontent.cloud/2025/06/09/12/20250609120405-BA8A5KET.json"
                             title="Kishan Mitra Bot"
-                            className="h-screen w-full"
+                            className="min-h-[500px] h-screen w-full"
                             style={{ border: "none" }}
                         />
                     </div>

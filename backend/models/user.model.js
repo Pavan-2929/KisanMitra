@@ -1,30 +1,28 @@
 import mongoose from "mongoose";
 
 const AddressSchema = new mongoose.Schema({
-  formattedAddress: { type: String, },
-  city: { type: String, },
-  state: { type: String, },
+  formattedAddress: { type: String },
+  city: { type: String },
+  state: { type: String },
   country: { type: String, default: "india" },
   pincode: { type: String },
   location: {
     type: {
       type: String,
       enum: ["Point"],
-      default: "Point"
+      default: "Point",
     },
     coordinates: {
       type: [Number],
-    }
+    },
   },
-  placeId: { type: String }
+  placeId: { type: String },
 });
-
 
 AddressSchema.index({ location: "2dsphere" });
 
 const userSchema = new mongoose.Schema(
   {
-
     fullName: {
       type: String,
       // required: true,
@@ -53,16 +51,17 @@ const userSchema = new mongoose.Schema(
         default:
           "https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png",
       },
-      filepath: { type: String, default: "" }
+      filepath: { type: String, default: "" },
     },
     googleId: {
-      type: String
+      type: String,
     },
-    userIp: {
-      type: String
+    userId: {
+      type: String,
     },
     isVerified: {
-      type: Boolean, default: false
+      type: Boolean,
+      default: false,
     },
     categories: {
       type: String,
@@ -92,5 +91,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
- const User = mongoose.model("User", userSchema);
-export default User 
+const User = mongoose.model("User", userSchema);
+export default User;

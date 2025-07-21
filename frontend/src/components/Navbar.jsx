@@ -1,91 +1,124 @@
 import React, { useEffect, useState } from "react";
 import logo from "@/assets/logo.png";
 import {
-  BotIcon,
-  ChevronDown,
   GlobeIcon,
+  ChevronDown,
   Mail,
   Phone,
-  User2Icon,
-  UserIcon,
+  Menu,
+  X,
 } from "lucide-react";
 import UserAvatar from "@/components/controls/UserAvatar";
 import { NavLink } from "react-router-dom";
 import LiveWeather from "./LiveWeather";
+import { useSelector } from "react-redux";
+
+const navLinks = [
+  { to: "/", label: "Home" },
+  { to: "/all-crops", label: "All Crops" },
+  { to: "/upload-crop", label: "Upload Crop" },
+  { to: "/blogs", label: "Blogs" },
+  { to: "/upload-blog", label: "Upload Blog" },
+  { to: "/weather", label: "Weather" },
+];
 
 const Navbar = () => {
-  const [isTop, setOffSet] = useState(false);
+  const [isTop, setIsTop] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isLogin = useSelector((state) => state.auth.isLogin);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      setOffSet(offset > 100);
-    };
-
+    const handleScroll = () => setIsTop(window.scrollY < 100);
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="relative">
-      <div className="bg-accent border-b py-1 pb-9">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between">
-            <NavLink to="/">
-              <img src={logo} alt="" className="h-20 w-24" />
-            </NavLink>
-            <div>
-              <LiveWeather />
+    <header className="w-full z-30">
+      {/* Top bar */}
+      <div className="bg-accent border-b py-1">
+        <div className="mx-auto max-w-7xl flex items-center justify-between">
+          <NavLink to="/">
+            <img src={logo} alt="Logo" className="h-16 w-20" />
+          </NavLink>
+          <LiveWeather />
+          <div className="flex items-center gap-6">
+            <div className="flex cursor-pointer items-center gap-2">
+              <GlobeIcon className="text-muted-foreground size-5" />
+              <span className="text-muted-foreground text-sm font-medium">EN</span>
+              <ChevronDown className="text-muted-foreground size-4" />
             </div>
+            <UserAvatar />
+            {/* Hamburger for mobile */}
+            <button
+              className="md:hidden ml-2 p-2 rounded hover:bg-gray-100"
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </div>
 
-            <div className="flex items-center justify-end gap-8">
-              <div className="flex cursor-pointer items-center gap-2">
-                <GlobeIcon className="text-muted-foreground size-5" />
-                <span className="text-muted-foreground text-sm font-medium">
-                  EN
-                </span>
-                <ChevronDown className="text-muted-foreground size-4" />
-              </div>
-              <UserAvatar />
+      {/* Main nav */}
+      <nav
+        className={`transition-all duration-300 ease-in-out ${isTop
+          ? "relative bg-primary text-primary-foreground"
+          : "fixed top-0 left-0 w-full bg-primary text-primary-foreground shadow-xl"
+          } z-20`}
+      >
+        <div className="mx-auto max-w-7xl flex items-center justify-between px-4 md:px-8">
+          {/* Nav links */}
+          <div className="hidden md:flex gap-7 py-4 text-[15px] font-semibold">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-green-300 underline underline-offset-4"
+                    : "hover:text-green-200 transition"
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+          {/* Mobile menu */}
+          {menuOpen && (
+            <div className="md:hidden absolute left-0 top-full w-full bg-primary text-primary-foreground shadow-lg flex flex-col gap-2 py-4 px-6">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-green-300 underline underline-offset-4"
+                      : "hover:text-green-200 transition"
+                  }
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+          {/* Contact info */}
+          <div className="hidden md:flex items-center gap-8 py-4">
+            <div className="flex items-center gap-2">
+              <Phone />
+              <span>+91 12345 67890</span>
+            </div>
+            <span className="bg-primary-foreground h-6 w-[2px]"></span>
+            <div className="flex items-center gap-2">
+              <Mail />
+              <span>kisanmitra2312@gmail.com</span>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className={
-          !isTop
-            ? "text-primary-foreground bg-primary z-20 -m-7 mx-auto flex max-w-7xl rounded-xl shadow-xl shadow-[#00000059] transition-all duration-300 ease-in-out"
-            : "bg-primary text-primary-foreground fixed top-0 z-30 flex w-[100%] shadow-xl shadow-[#00000059] transition-all duration-300 ease-in-out"
-        }
-      >
-        <div
-          className={`flex w-[55%] items-center justify-between gap-5 px-7 text-[15px] font-semibold transition-all duration-300 ease-in-out ${!isTop ? "py-4" : "py-5 pl-20"}`}
-        >
-          <NavLink to="/e-commerce">E-Commerce</NavLink>
-          <NavLink to="/blogs">Blogs</NavLink>
-          <NavLink to="/resources">Resources</NavLink>
-          <NavLink to="/hire-contractors">Hire Contractors</NavLink>
-          <NavLink to="/weather">Weather</NavLink>
-        </div>
-        <div
-          className={`${
-            !isTop ? "rounded-r-lg py-4" : "py-5"
-          } pl-r bg-lightgreen flex w-[45%] items-center justify-between px-7 text-[15px] font-semibold duration-300 ease-in-out`}
-        >
-          <div className="mx-auto flex items-center justify-center gap-2">
-            <Phone />
-            <p>+91 00000 00000</p>
-          </div>
-          <p className="bg-primary-foreground h-6 w-[2px]"></p>
-          <div className="mx-auto flex items-center justify-center gap-2">
-            <Mail />
-            <p>kisanmitra2312@gmail.com</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </nav>
+    </header>
   );
 };
 

@@ -31,7 +31,7 @@ const initialState = {
     deliveryOptions: "Pickup",
 };
 
-const Crop = () => {
+const UploadCrop = () => {
     const [form, setForm] = useState(initialState);
     const [mediaFiles, setMediaFiles] = useState([]);
     const [mediaPreviews, setMediaPreviews] = useState([]);
@@ -114,8 +114,20 @@ const Crop = () => {
             formData.append("files", file);
         });
 
+        // Get userId from localStorage (or Redux if you use it)
+        const userId = JSON.parse(localStorage.getItem("userId"));
+        console.log(userId);
         try {
-            const res = await axios.post("http://localhost:5000/api/crops/add-new-crop", formData);
+            const res = await axios.post(
+                "http://localhost:5000/api/crops/add-new-crop",
+                formData,
+                {
+                    headers: {
+                        "userId": userId,
+                        // If you need to send multipart/form-data, axios sets it automatically with FormData
+                    }
+                }
+            );
             console.log(res);
             toast.success("Crop added successfully!");
             setForm(initialState);
@@ -391,4 +403,4 @@ const Crop = () => {
     );
 };
 
-export default Crop;
+export default UploadCrop;

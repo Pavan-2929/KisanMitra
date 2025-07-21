@@ -20,27 +20,43 @@ const LiveWeather = () => {
   };
 
   const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchWeather(latitude, longitude);
-        },
-        (error) => {
-          console.error("Error fetching weather:", error);
-          if (error.code === error.PERMISSION_DENIED) {
-            setError("Please allow to access location");
-          } else if (error.code === error.POSITION_UNAVAILABLE) {
-            setError("Location information is unavailable.");
-          } else {
-            setError("Failed to fetch weather data.");
-          }
-        },
-      );
-    } else {
-      setError("GeoLocation is not supported");
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      return;
     }
+
+    console.log("Fetching location...");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("Latitude:", latitude, "Longitude:", longitude);
+        fetchWeather(latitude, longitude); // Pass coordinates to your weather fetcher
+      },
+      (error) => {
+        console.error("Error fetching location:", error);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setError("Please allow access to location.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setError("Location information is unavailable.");
+            break;
+          case error.TIMEOUT:
+            setError("Location request timed out.");
+            break;
+          default:
+            setError("An unknown error occurred while fetching location.");
+        }
+      },
+      {
+        enableHighAccuracy: true, // optional but helpful for better precision
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
   };
+
 
   useEffect(() => {
     getLocation();

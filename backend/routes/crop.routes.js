@@ -5,6 +5,7 @@ import {
   getCrops,
   removeCrop,
   updateCrop,
+  addInterestedDealer,
 } from "../controllers/crop.controller.js";
 import upload from "../config/multerConfig.js";
 
@@ -15,5 +16,6 @@ router.route("/get-crop/:id").get(getCrop);
 router.route("/update-crop/:id").put(upload.array("files", 5), updateCrop);
 router.route("/get-all-crops").get(getCrops);
 router.route("/remove-crop/:id").delete(removeCrop);
+router.post("/interest/:id", addInterestedDealer);
 
 export default router;
