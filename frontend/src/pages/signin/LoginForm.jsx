@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { PasswordInput } from "@/components/controls/PasswordInput";
 import { login, logout } from "@/lib/authSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 
 const LoginForm = () => {
@@ -37,21 +38,22 @@ const LoginForm = () => {
   const onSubmit = async (values) => {
     try {
       const { email, password } = values;
-      console.log(email);
+
       const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, {
         email, password
       }, {
         headers: {
           'Content-Type': "application/json"
         },
-        withCredentials: true
       })
       if (res.data) {
+        toast.success(res.data.message || "Login successful!");
         localStorage.setItem("userId", JSON.stringify(res.data.userId));
         dispatch(login());
         navigate("/");
       }
     } catch (error) {
+      toast.error(error.response?.data?.message || "Login failed!");
       console.log(error)
     }
   };
@@ -113,7 +115,7 @@ const LoginForm = () => {
           Forget Password?{" "}
         </p>
         <div className="w-full pt-3">
-          <LoadingButton loading={loading} type="submit" className="w-full">
+          <LoadingButton loading={loading} type="submit" className="w-full disabled:opacity-50">
             Sign In
           </LoadingButton>
         </div>

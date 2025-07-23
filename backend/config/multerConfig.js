@@ -12,10 +12,10 @@ const storage = new CloudinaryStorage({
       folder = "Kishan_video";
       resourceType = "video";
     }
-
+    console.log("File being uploaded:", file.originalname);
     return {
       folder: folder,
-      allowed_formats: ["jpg", "png", "jpeg", "mp4", "avi", "mov"],
+      allowed_formats: ["jpg", "png", "jpeg", "mp4", "avi", "mov", "webp"],
       resource_type: resourceType,
     };
   },

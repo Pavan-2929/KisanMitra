@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
+import { ThreeDots } from "react-loader-spinner";
 
 const defaultProfile =
     "https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png";
@@ -12,7 +13,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [profileImageFile, setProfileImageFile] = useState(null);
+    const [profileImageFile, setProfileImageFile] = useState();
     const fileInputRef = useRef();
 
     // Fetch user data on mount
@@ -22,9 +23,7 @@ const Profile = () => {
             try {
                 // Get userId from localStorage or Redux
                 const userId = JSON.parse(localStorage.getItem("userId"));
-                console.log("Fetching user with ID:", userId);
                 const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/auth/get-user/${userId}`);
-                console.log(res.data?.user)
                 setUser(res.data?.user);
                 setForm(res.data?.user);
             } catch (err) {
@@ -63,25 +62,41 @@ const Profile = () => {
         setError("");
 
         try {
-            const userId = user._id || user.userId;
+            const userId = user?._id || JSON.parse(localStorage.getItem("userId"));
+
             const data = new FormData();
 
-            // If a new image file is selected, send it with FormData to backend
-            if (profileImageFile) {
-                data.append("image", profileImageFile);
+            // Append primitive fields directly
+            data.append("fullName", form.fullName ?? "");
+            data.append("phone", form.phone ?? "");
+            data.append("categories", form.categories ?? "");
+
+            // Append address fields individually
+            if (form.address) {
+                data.append("address[formattedAddress]", form.address.formattedAddress ?? "");
+                data.append("address[city]", form.address.city ?? "");
+                data.append("address[state]", form.address.state ?? "");
+                data.append("address[country]", form.address.country ?? "");
+                data.append("address[pincode]", form.address.pincode ?? "");
             }
-            // No new image, just send JSON
-            data.append("")
+            if (profileImageFile) {
+                data.append("files", profileImageFile);
+            }
+
             const res = await axios.put(
                 `${import.meta.env.VITE_SERVER_URL}/api/auth/update-user/${userId}`,
-                form
+                data,
+                { headers: { "Content-Type": "multipart/form-data" } }
             );
-            setUser(res.data);
-            setForm(res.data);
+
+            setUser(res.data?.user);
+            setForm(res.data?.user);
+
 
             setEdit(false);
             setProfileImageFile(null);
         } catch (err) {
+            console.log(err)
             setError("Failed to update profile.");
         } finally {
             setSaving(false);
@@ -100,7 +115,17 @@ const Profile = () => {
         }));
     };
 
-    if (loading) return <div className="text-center py-10">Loading...</div>;
+
+    if (loading) return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
+        visible={true}
+        height="80"
+        width="80"
+        color="#4fa94d"
+        radius="9"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+    /></div>;
     if (error) return <div className="text-center text-red-600 py-10">{error}</div>;
 
     return (

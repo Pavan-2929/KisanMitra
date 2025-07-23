@@ -15,7 +15,8 @@ const authSlice = createSlice({
     },
     logout(state) {
       state.isLogin = false;
-      localStorage.removeItem("user");
+      localStorage.removeItem("userId");
+      toast.success("Logout successfully!");
     },
   },
 });

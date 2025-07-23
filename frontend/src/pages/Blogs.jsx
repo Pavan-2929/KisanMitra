@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 const Blogs = () => {
     const [blogs, setBlogs] = useState([]);
@@ -24,7 +25,16 @@ const Blogs = () => {
     }, []);
 
     if (loading) {
-        return <div className="text-center py-10">Loading blogs...</div>;
+        return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
+            visible={true}
+            height="80"
+            width="80"
+            color="#4fa94d"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+        /></div>;
     }
 
     if (!blogs.length) {

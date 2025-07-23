@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MdClose } from "react-icons/md"; // Add this for a nice close icon (install react-icons if needed)
+import toast from "react-hot-toast";
 
 const UploadBlog = () => {
     const [title, setTitle] = useState("");
@@ -63,10 +64,11 @@ const UploadBlog = () => {
                     "userId": userId, // Assuming userId is stored in localStorage
                 },
             });
-
+            toast.success(res.data.message || "Blog uploaded successfully!");
             console.log(res);
             navigate("/blogs");
         } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to upload blog. Please try again.");
             setError("Failed to upload blog. Please try again.");
         } finally {
             setLoading(false);
