@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { ThreeDots } from "react-loader-spinner";
 
 const CropInformation = () => {
     const { id } = useParams();
@@ -33,7 +34,16 @@ const CropInformation = () => {
     }, [id]);
 
     console.log(farmer)
-    if (!crop) return <div>Loading...</div>;
+    if (!crop) return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
+        visible={true}
+        height="80"
+        width="80"
+        color="#4fa94d"
+        radius="9"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+    /></div>;
 
 
     return (

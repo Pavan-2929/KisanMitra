@@ -46,7 +46,7 @@ const Home = () => {
           <div className="mx-auto max-w-7xl space-y-28 px-7">
             <div className="space-y-7 text-center text-4xl font-bold">
               <h1>Upload your crops details and</h1>
-              <h1 className=" bg-primary text-white py-1 md:bg-accent">
+              <h1 className=" bg-primary md:bg-white md:text-black text-white py-1 ">
                 get{" "}
                 <span className="md:bg-primary rounded-sm px-2 py-1 md:text-white">
                   best value without middleman

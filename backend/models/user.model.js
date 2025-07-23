@@ -6,26 +6,13 @@ const AddressSchema = new mongoose.Schema({
   state: { type: String },
   country: { type: String, default: "india" },
   pincode: { type: String },
-  location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      default: "Point",
-    },
-    coordinates: {
-      type: [Number],
-    },
-  },
-  placeId: { type: String },
 });
-
-AddressSchema.index({ location: "2dsphere" });
 
 const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      // required: true,
+      required: true,
       trim: true,
     },
     email: {
@@ -33,7 +20,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
-      // required: true,
+      required: true,
       validate: {
         validator: (email) => {
           return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -43,7 +30,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      // required: true,
+      required: true,
     },
     profile: {
       url: {
@@ -51,7 +38,6 @@ const userSchema = new mongoose.Schema(
         default:
           "https://www.pngkey.com/png/full/115-1150152_default-profile-picture-avatar-png-green.png",
       },
-      filepath: { type: String, default: "" },
     },
     googleId: {
       type: String,

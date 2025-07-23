@@ -41,7 +41,6 @@ export const addNewCrop = async (req, res) => {
   });
 
   const userId = req.headers.userid;
-  console.log(userId);
   // Required field validation
   if (
     !name ||
@@ -69,7 +68,10 @@ export const addNewCrop = async (req, res) => {
     user.address == "" ||
     user.address == null
   ) {
-    return res.redirect("/profile");
+    return res.status(400).json({
+      isCompleteProfile: false,
+      message: "Please complete your profile before adding a crop.",
+    });
   }
 
   try {
@@ -136,7 +138,6 @@ export const addNewCrop = async (req, res) => {
       farmer: userId,
     });
 
-    console.log(newCrop);
     const savedCrop = await newCrop.save();
     res
       .status(201)
@@ -151,14 +152,11 @@ export const addNewCrop = async (req, res) => {
 export const getCrop = async (req, res) => {
   try {
     const cropId = req.params.id;
-    console.log("Fetching crop with ID:", cropId);
-    console.log(typeof cropId);
 
     const crop = await Crops.findById(cropId).populate(
       "farmer",
       "fullName email profile address phone"
     );
-    console.log("Crop found:", crop);
     if (!crop) {
       return res.status(404).json({ message: "Crop not found!" });
     }
@@ -172,7 +170,6 @@ export const getCrop = async (req, res) => {
 export const getCrops = async (req, res) => {
   try {
     const crops = await Crops.find();
-    console.log(crops);
     if (!crops || crops.length === 0) {
       return res.status(404).json({ message: "No crops found!" });
     }

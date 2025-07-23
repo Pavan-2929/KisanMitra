@@ -78,6 +78,6 @@ router.post("/login", login);
 router.post("/logout", logout);
 router.get("/get-user/:id", getUser);
 router.get("/get-all-users", getUsers);
-router.put("/update-user/:id", upload.single("image"), updateUser);
+router.put("/update-user/:id", upload.array("files", 1), updateUser);
 
 export default router;

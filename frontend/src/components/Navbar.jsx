@@ -9,17 +9,18 @@ import {
   X,
 } from "lucide-react";
 import UserAvatar from "@/components/controls/UserAvatar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import LiveWeather from "./LiveWeather";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Translate from "./controls/Translate";
+import { FiLogOut } from "react-icons/fi";
+import { logout } from "@/lib/authSlice";
+
 
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/all-crops", label: "All Crops" },
-  { to: "/upload-crop", label: "Upload Crop" },
   { to: "/blogs", label: "Blogs" },
-  { to: "/upload-blog", label: "Upload Blog" },
   { to: "/weather", label: "Weather" },
 ];
 
@@ -27,12 +28,20 @@ const Navbar = () => {
   const [isTop, setIsTop] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const isLogin = useSelector((state) => state.auth.isLogin);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const handleScroll = () => setIsTop(window.scrollY < 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  }
 
   return (
     <header className="w-full z-30 overflow-hidden">
@@ -58,6 +67,7 @@ const Navbar = () => {
               <Translate />
             </div>
             <UserAvatar />
+            {isLogin && <div className=" text-2xl text-red-700 font-bold cursor-pointer hidden lg:block" onClick={handleLogout}><FiLogOut /></div>}
           </div>
         </div>
       </div>
@@ -85,6 +95,24 @@ const Navbar = () => {
                 {link.label}
               </NavLink>
             ))}
+            {isLogin && <>
+              <NavLink to={"/upload-blog"} className={({ isActive }) =>
+                isActive
+                  ? "text-green-300 underline underline-offset-4"
+                  : "hover:text-green-200 transition"
+              }>Upload Blog</NavLink>
+              <NavLink to={"/upload-crop"} className={({ isActive }) =>
+                isActive
+                  ? "text-green-300 underline underline-offset-4"
+                  : "hover:text-green-200 transition"
+              }>Upload Crop</NavLink>
+            </>}
+
+            {!isLogin && <NavLink to={"/signin"} className={({ isActive }) =>
+              isActive
+                ? "text-green-300 underline underline-offset-4"
+                : "hover:text-green-200 transition"
+            }>Sign In</NavLink>}
           </div>
           {/* Mobile menu */}
           {menuOpen && (
@@ -103,6 +131,45 @@ const Navbar = () => {
                   {link.label}
                 </NavLink>
               ))}
+              {isLogin && <>
+                <NavLink
+                  to={"/upload-blog"}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-green-300 underline underline-offset-4"
+                      : "hover:text-green-200 transition"
+                  }
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Upload Blog
+                </NavLink>
+                <NavLink
+                  to={"/upload-crop"}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-green-300 underline underline-offset-4"
+                      : "hover:text-green-200 transition"
+                  }
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Upload Crop
+                </NavLink>
+                <NavLink to={"/profile"} className={({ isActive }) =>
+                  isActive
+                    ? "text-green-300 underline underline-offset-4"
+                    : "hover:text-green-200 transition"
+                } onClick={() => setMenuOpen(false)}>
+                  Profile
+                </NavLink>
+              </>}
+              {!isLogin && <NavLink to={"/signin"} className={({ isActive }) =>
+                isActive
+                  ? "text-green-300 underline underline-offset-4"
+                  : "hover:text-green-200 transition"
+              } onClick={() => setMenuOpen(false)}>
+                Sign In
+              </NavLink>}
+              {isLogin && <div className=" text-xl text-red-500 font-bold cursor-pointer lg:hidden flex items-center gap-2" onClick={handleLogout}>Logout <FiLogOut /></div>}
             </div>
           )}
           {/* Contact info */}

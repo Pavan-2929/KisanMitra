@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { ThreeDots } from "react-loader-spinner";
 
 const Crops = () => {
     const [crops, setCrops] = useState([]);
@@ -51,11 +52,20 @@ const Crops = () => {
     };
 
     if (loading) {
-        return <div className="text-center py-10">Loading crops...</div>;
+        return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
+            visible={true}
+            height="80"
+            width="80"
+            color="#4fa94d"
+            radius="9"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+        /></div>;
     }
 
     if (!crops.length) {
-        return <div className="text-center py-10">No crops found.</div>;
+        return <div className="text-center py-10 h-screen">No crops found.</div>;
     }
 
     return (

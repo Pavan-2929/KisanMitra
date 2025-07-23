@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { ThreeDots } from "react-loader-spinner";
 
 const Blog = () => {
     const { id } = useParams();
@@ -85,7 +86,16 @@ const Blog = () => {
     // Check if current user has liked the blog
 
 
-    if (loading) return <div className="text-center py-10">Loading...</div>;
+    if (loading) return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
+        visible={true}
+        height="80"
+        width="80"
+        color="#4fa94d"
+        radius="9"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+    /></div>;
     if (!blog) return <div className="text-center py-10 text-red-600">Blog not found.</div>;
 
     return (

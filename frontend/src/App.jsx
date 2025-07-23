@@ -24,20 +24,22 @@ function App() {
     <div className=" overflow-hidden">
       <BrowserRouter>
         <Toaster />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {!isLogin && <Route path="/signin" element={<SignIn />} />}
-          <Route path="/weather" element={<Weather />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blog/:id" element={<Blog />} />
-          {isLogin && <Route path="/upload-crop" element={<UploadCrop />} />}
-          <Route path="/all-crops" element={<Crops />} />
-          {isLogin && <Route path="/crop-information/:id" element={<CropInformation />} />}
-          {isLogin && <Route path="/upload-blog" element={<UploadBlog />} />}
-          {<Route path="/profile" element={<div className="text-center py-10"><Profile /></div>} />}
-          <Route path="*" element={<div className="text-center py-10">Page Not Found</div>} />
-        </Routes>
+        <div className="min-h-screen">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            {!isLogin && <Route path="/signin" element={<SignIn />} />}
+            <Route path="/weather" element={<Weather />} />
+            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/blog/:id" element={<Blog />} />
+            {isLogin && <Route path="/upload-crop" element={<UploadCrop />} />}
+            <Route path="/all-crops" element={<Crops />} />
+            {isLogin && <Route path="/crop-information/:id" element={<CropInformation />} />}
+            {isLogin && <Route path="/upload-blog" element={<UploadBlog />} />}
+            {isLogin && <Route path="/profile" element={<div className="text-center py-10"><Profile /></div>} />}
+            <Route path="*" element={<div className="text-center py-10">Page Not Found</div>} />
+          </Routes>
+        </div>
         <Footer />
         <ChatBot />
       </BrowserRouter>

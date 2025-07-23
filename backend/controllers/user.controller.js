@@ -138,7 +138,7 @@ export const magiclinkCallbackRegistrationController = async (
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("Login attempt with email:", email);
+
   if (!email || !password) {
     return res.status(400).json({
       success: false,
@@ -148,6 +148,7 @@ export const login = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email: email });
+    console.log(user);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -240,7 +241,7 @@ export const getUser = async (req, res) => {
     const user = await User.findById(userId).select(
       "-password -__v -createdAt -updatedAt"
     );
-    console.log(user);
+
     return res.status(200).send({
       success: true,
       user,
@@ -256,40 +257,43 @@ export const getUser = async (req, res) => {
 
 export const getUsers = (req, res) => {};
 
-export const updateUser = (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    console.log("Updating user with ID:", userId);
-    const { fullName, phone, address, category } = req.body;
-    const { profile } = req.files || {};
 
-    if (!fullName || !phone || !address || !category) {
+    const { fullName, phone, address, categories } = req.body;
+    const profile = req.files || {};
+
+    if (!fullName || !phone || !address || !categories) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
     }
 
-    const user = User.findByIdAndUpdate(
-      userId,
-      {
-        fullName: fullName,
-        phone: phone,
-        address: {
-          formattedAddress: address.formattedAddress,
-          city: address.city,
-          state: address.state,
-          country: address.country,
-          pincode: address.pincode,
-          profile: {
-            url: profile ? profile[0].secure_url : "",
-            filepath: profile ? profile[0].public_id : "",
-          },
-        },
-        categories: category,
+    const updatedData = {
+      fullName,
+      phone,
+      address: {
+        formattedAddress: address.formattedAddress,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        pincode: address.pincode,
       },
-      { new: true } // Return the updated user
-    ).select("-password -__v -createdAt -updatedAt");
+      categories,
+    };
+
+    // Add profile inside address only if profile exists
+    if (profile && profile.length > 0) {
+      updatedData.profile = {
+        url: profile[0].path,
+      };
+    }
+
+    const user = await User.findByIdAndUpdate(userId, updatedData, {
+      new: true,
+    }).select("-password");
 
     return res.status(200).json({
       success: true,
@@ -297,6 +301,7 @@ export const updateUser = (req, res) => {
       user: user,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       error: error.message || "Internal server error",

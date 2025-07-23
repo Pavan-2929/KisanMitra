@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { UploadCloud, Loader2 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
     name: "",
@@ -37,6 +38,7 @@ const UploadCrop = () => {
     const [mediaPreviews, setMediaPreviews] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const dropRef = useRef();
+    const navigate = useNavigate();
 
     // Handle input changes
     const handleChange = (e) => {
@@ -134,7 +136,11 @@ const UploadCrop = () => {
             setMediaFiles([]);
             setMediaPreviews([]);
         } catch (error) {
-            toast.error(error.response?.data?.message || "Something went wrong!");
+            toast.error(error?.response?.data?.message || "Something went wrong!");
+            console.log(error)
+            if (error?.response?.data?.isCompleteProfile === false) {
+                navigate("/profile");
+            }
         } finally {
             setIsSubmitting(false);
         }
