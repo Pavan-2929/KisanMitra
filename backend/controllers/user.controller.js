@@ -23,7 +23,6 @@ const address = {
 
 export const register = async (req, res) => {
   const { email, password, fullName } = req.body;
-  console.log("Registering user:");
   if (!email || !password || !fullName) {
     return res
       .status(400)
@@ -46,7 +45,6 @@ export const register = async (req, res) => {
       password: hashPassword,
       fullName: fullName,
     });
-    console.log("New User:", newUser);
     await newUser.save();
     return res.status(200).json({
       success: true,
@@ -148,7 +146,6 @@ export const login = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email: email });
-    console.log(user);
     if (!user) {
       return res.status(401).json({
         success: false,

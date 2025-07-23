@@ -13,13 +13,11 @@ const Crops = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const isLogin = useSelector((state) => state.auth.isLogin);
-    console.log("Is user logged in:", isLogin);
 
     useEffect(() => {
         const fetchCrops = async () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/crops/get-all-crops`);
-                console.log(res.data);
                 setCrops(res.data);
             } catch (error) {
                 setCrops([]);

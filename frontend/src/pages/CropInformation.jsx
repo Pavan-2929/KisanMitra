@@ -18,7 +18,6 @@ const CropInformation = () => {
         const fetchCrop = async () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/crops/get-crop/${id}`);
-                console.log("Fetched crop data:", res.data);
                 setCrop(res.data);
                 setfarmer(res?.data?.farmer);
                 setImages(res?.data?.cropImagesUrl
@@ -33,7 +32,6 @@ const CropInformation = () => {
         fetchCrop();
     }, [id]);
 
-    console.log(farmer)
     if (!crop) return <div className="text-center py-20 h-screen  flex justify-center"><ThreeDots
         visible={true}
         height="80"

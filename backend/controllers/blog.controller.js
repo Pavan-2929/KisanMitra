@@ -200,7 +200,6 @@ export const commentToBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ message: "Blog not found!" });
     }
-    console.log("Adding comment to blog:", blogId, userId, text);
 
     blog.comments.push({ user: userId, text });
     await blog.save();
