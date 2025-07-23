@@ -59,6 +59,9 @@ app.use("/api/blogs", blogRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/query", queryRouter);
 app.use("/api", dealerRouter);
+app.get("/ping", (req, res) => {
+  res.status(200).json({ message: "Pong!" });
+});
 
 app.use((err, req, res, next) => {
   console.log(err);
