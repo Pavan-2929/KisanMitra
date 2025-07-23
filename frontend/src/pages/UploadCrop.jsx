@@ -118,7 +118,6 @@ const UploadCrop = () => {
 
         // Get userId from localStorage (or Redux if you use it)
         const userId = JSON.parse(localStorage.getItem("userId"));
-        console.log(userId);
         try {
             const res = await axios.post(
                 `${import.meta.env.VITE_SERVER_URL}/api/crops/add-new-crop`,
@@ -130,7 +129,6 @@ const UploadCrop = () => {
                     }
                 }
             );
-            console.log(res);
             toast.success("Crop added successfully!");
             setForm(initialState);
             setMediaFiles([]);

@@ -62,11 +62,9 @@ const LoginForm = () => {
     <Form {...form}>
       <form onSubmit={(e) => {
         e.preventDefault();
-        console.log("Form submit clicked!");
 
         form.handleSubmit(
           (values) => {
-            console.log("Form values received:", values);
             onSubmit(values);
           },
           (errors) => {

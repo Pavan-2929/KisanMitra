@@ -55,9 +55,7 @@ const UploadBlog = () => {
 
             formData.append("title", title);
             formData.append("description", content);
-            console.log(title);
-            console.log(content);
-            console.log(formData)
+
             const userId = JSON.parse(localStorage.getItem("userId"));
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/blogs/add-new-blog`, formData, {
                 headers: {
@@ -65,7 +63,6 @@ const UploadBlog = () => {
                 },
             });
             toast.success(res.data.message || "Blog uploaded successfully!");
-            console.log(res);
             navigate("/blogs");
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to upload blog. Please try again.");

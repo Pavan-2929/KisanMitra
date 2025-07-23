@@ -21,8 +21,6 @@ const PopularWeather = () => {
           ),
         );
 
-        console.log(responses);
-
         setWeatherData(responses);
       } catch (error) {
         console.error("Error fetching weather data:", error);

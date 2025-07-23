@@ -1,6 +1,7 @@
 import mongoose, { Mongoose } from "mongoose";
 import Crops from "../models/crop.model.js";
 import User from "../models/user.model.js";
+import { sendInterestMail } from "../mail/sendMail.js";
 
 // Add New Crop
 export const addNewCrop = async (req, res) => {
@@ -310,6 +311,13 @@ export const addInterestedDealer = async (req, res) => {
       return res.status(404).json({ message: "Crop not found!" });
     }
 
+    const interestedUser = await User.findById(dealerId).select(
+      "fullName email profile address phone"
+    );
+    if (!interestedUser) {
+      return res.status(404).json({ message: "Interested user not found!" });
+    }
+
     const alreadyInterested = cropExists.interestedDealers.some(
       (dealer) => dealer.user.toString() === dealerId
     );
@@ -319,13 +327,22 @@ export const addInterestedDealer = async (req, res) => {
         .status(400)
         .json({ message: "Dealer already registered interest in this crop." });
     }
+
     const crop = await Crops.findByIdAndUpdate(
       cropId,
       { $addToSet: { interestedDealers: { user: dealerId } } },
       { new: true }
+    ).populate("farmer", "fullName email");
+
+    await sendInterestMail(
+      crop.farmer.email,
+      crop.farmer.fullName,
+      crop.name,
+      interestedUser
     );
+
     res.json({ message: "Interest registered", crop });
   } catch (error) {
-    res.status(500).json({ message: "Failed to register interest" });
+    res.status(500).json({ message: "Internal server error!" });
   }
 };

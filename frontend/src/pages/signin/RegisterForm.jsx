@@ -33,14 +33,12 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (values) => {
-    console.log(values)
     const fullName = values.username;
     const email = values.email;
     const password = values.password;
     setLoading(true);
     setError(null);
     try {
-      console.log(fullName, email, password);
       const res = await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/register`, { fullName, email, password }, { headers: { "Content-Type": "application/json", } }
       );
@@ -48,7 +46,6 @@ const RegisterForm = () => {
       toast.success(res.data.message || "Registration successful!");
       navigate("/signin");
       form.reset();
-      console.log(res);
     } catch (err) {
       console.error("Error submitting form:", err);
       toast.error(err.response?.data?.message || "Internal server error!");
@@ -56,7 +53,6 @@ const RegisterForm = () => {
     } finally {
       setLoading(false);
     }
-    console.log(email);
   };
 
   return (

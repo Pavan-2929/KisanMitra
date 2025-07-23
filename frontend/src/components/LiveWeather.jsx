@@ -25,12 +25,10 @@ const LiveWeather = () => {
       return;
     }
 
-    console.log("Fetching location...");
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        console.log("Latitude:", latitude, "Longitude:", longitude);
         fetchWeather(latitude, longitude); // Pass coordinates to your weather fetcher
       },
       (error) => {
